@@ -42,6 +42,7 @@
             firstName:string, 
             lastName:string 
             ```
+
  - /ping
     - Tries connection to database
  
