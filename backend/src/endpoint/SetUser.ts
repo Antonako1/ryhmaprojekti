@@ -19,9 +19,6 @@ const SetUser = async (req: any, res: any) : Promise<any> => {
         });
 
         // Update user details
-        sequelize.sync();  
-        User.sync();
-        
         const user = await User.findOne({ where: { email: email } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });

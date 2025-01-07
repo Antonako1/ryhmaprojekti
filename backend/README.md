@@ -8,7 +8,7 @@
 
   Example: http://localhost:3333/api/{endpoints}
 
- - /register
+ - POST: /register
     - Creates new user entry.
     -   req.body: ```ts
             firstName: string, 
@@ -19,7 +19,7 @@
             balance: number
             ```
         
- - /get-user
+ - POST: /get-user
     - Gets user details and returns JWT token
     - req.body: ```
                 email: string,
@@ -31,7 +31,7 @@
                 token: JWT_TOKEN
                 ```
  
- - /set-user
+ - POST: /set-user
     - Updates user information
     - req.body: ```
             token:number, 
@@ -43,6 +43,41 @@
             lastName:string 
             ```
 
- - /ping
+ - POST: /all-cars
+   - Fetches all cars
+   - query: ?limit={limit}&offset={offset}
+
+ - POST: /all-alcohol 
+   - Fetches all alcohol
+   - query: ?limit={limit}&offset={offset}
+   
+ - POST: /alcohol/{id}
+   - Fetches specific alcohol
+   - req.body: ```
+               id:number
+               ```
+
+ - POST: /cars/{id}
+   - Fetches specific car
+   - req.body: ```
+               id:number
+               ```
+
+ - GET /get-amount/car
+   - Get amount of reviews and data entries for cars
+   - response: ```
+                AmountOfCars,
+                AmountOfReviews
+                ```
+
+ - GET /get-amount/alcohol
+   - Get amount of reviews and data entries for alcohols
+   - response: ```
+                AmountOfCars,
+                AmountOfReviews
+                ```
+
+
+ - GET /ping
     - Tries connection to database
  

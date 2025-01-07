@@ -1,60 +1,68 @@
-import bcrypt from 'bcrypt';
-import sequelize from '../config/db';
-import User from '../modules/User';
-import { create } from 'ts-node';
-import CartWishlist from '../modules/CartWishlist';
+import bcrypt from "bcrypt";
+import sequelize from "../config/db";
+import User from "../modules/User";
+import CartWishlist from "../modules/CartWishlist";
 
 const Register = async (
-    firstName: string, 
-    lastName: string, 
-    email: string, 
-    password: string, 
-    role: string, 
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    role: string,
     balance: number
 ) => {
+    const transaction = await sequelize.transaction(); // Start a transaction
+
     try {
-        await sequelize.sync();
-        await User.sync();
-        await CartWishlist.sync();
-        const user = await User.findOne({ where: { email } });
-        if (user) {
+        // Check if the user already exists
+        const existingUser = await User.findOne({ where: { email } });
+        if (existingUser) {
             throw new Error("User already exists");
         }
+
+        // Hash the password
         const passwordHash = await bcrypt.hash(password, 10);
 
-        const cartWishlist =
-        await CartWishlist.create({
-            userId: 1,
-            productId: 1,
-            quantity: 1,
-            createdAt: new Date(),
-            updatedAt: new Date
-        });
+        // Create a new CartWishlist entry for the user
+        const newCartWishlist = await CartWishlist.create(
+            {},
+            { transaction } // Pass the transaction
+        );
 
-        const newUser =
-        await User.create({
-            firstName,
-            lastName,
-            email,
-            passwordHash,
-            role,
-            balance,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            CartWishlistId: 1
-        });
+        // Create a new User entry
+        const newUser = await User.create(
+            {
+                firstName,
+                lastName,
+                email,
+                password: passwordHash, // Store the hashed password
+                role,
+                balance,
+                CartWishlistId: newCartWishlist.id, // Link the user's CartWishlist
+            },
+            { transaction } // Pass the transaction
+        );
 
-        // Assign the cartWishlistId to the user
-        newUser.cartWishlistId = cartWishlist.id;
-        await newUser.save();
+        // Commit the transaction
+        await transaction.commit();
 
-        // Assign the userId to the cartWishlist
-        cartWishlist.userId = newUser.id;
-        await cartWishlist.save();
-    } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error");
+        return {
+            message: "User registered successfully",
+            user: {
+                id: newUser.id,
+                firstName: newUser.firstName,
+                lastName: newUser.lastName,
+                email: newUser.email,
+                role: newUser.role,
+                balance: newUser.balance,
+            },
+        };
+    } catch (error: any) {
+        // Rollback the transaction in case of an error
+        await transaction.rollback();
+        console.error("Error in Register function:", error.message);
+        throw new Error(error.message || "Internal Server Error");
     }
-}
+};
 
 export default Register;
