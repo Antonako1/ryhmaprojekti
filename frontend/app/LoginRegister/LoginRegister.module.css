@@ -1,0 +1,17 @@
+.LoginRegisterWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.LoginRegister {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70dvw;
+    height: 70dvh;
+    padding: 2;
+    border: 1px dashed grey;
+    background-color: white;
+}

@@ -18,17 +18,3 @@ export default function Home() {
     </ul>
   );
 }
- 
-/*
-
-const loler = () => {
-    console.log('Ty loh, xaxaxa')
-    return (
-        <div>
-            lol
-        </div>
-    )
-};
-
-export default loler;
-*/
