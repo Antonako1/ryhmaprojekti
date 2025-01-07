@@ -16,7 +16,6 @@ class User extends Model {
     public balance!: number;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
-    public cartWishlistId!: number;
 }
 
 User.init(

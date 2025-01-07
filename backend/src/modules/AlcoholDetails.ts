@@ -2,65 +2,57 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/db';
 import Product from './Product';
 
-class AlcoholDetails extends Product {
+class AlcoholDetails extends Model {
     public id!: number;
     public alcoholType!: string;
     public alcoholBrand!: string;
-    public alcoholPrice!: number;
-    public alcoholImage!: string;
-    public alchoholVolume!: number;
-    public alcoholStock!: number;
-    public alcoholDescription!: string;
-    public alcoholRating!: number;
+    public alcoholVolume!: number;
+    public alcoholYear!: number;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
-    public ProductId!: number;
+    public ProductId!: number; // Foreign key
 }
 
 AlcoholDetails.init(
-    {
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true,
-        },
-        alcoholType: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        alcoholBrand: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        alcoholPrice: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        alcoholImage: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        alcoholVolume: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        alcoholStock: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        alcoholDescription: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        alcoholRating: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
-    {
-        sequelize,
-        tableName: 'alcoholDetails',
-    }
+    alcoholType: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    alcoholBrand: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    alcoholYear: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    alcoholVolume: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    ProductId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Product,
+        key: 'product_id',
+      },
+    },
+  },
+  {
+    sequelize,
+    tableName: 'alcohols',
+  }
 );
+
+// Association
+Product.hasOne(AlcoholDetails, { foreignKey: 'ProductId', as: 'alcoholDetails' });
+AlcoholDetails.belongsTo(Product, { foreignKey: 'ProductId' });
 
 export default AlcoholDetails;

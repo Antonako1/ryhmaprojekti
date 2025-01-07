@@ -7,6 +7,19 @@ import Register from './src/endpoint/Register';
 import GetUser from './src/endpoint/GetUser';
 import User from './src/modules/User';
 import SetUser from './src/endpoint/SetUser';
+import AllCars from './src/endpoint/AllCars';
+import AllAlcohol from './src/endpoint/AllAlcohol';
+import AlcoholId from './src/endpoint/AlcoholId';
+import CarId from './src/endpoint/CarId';
+import GetAmountCar from './src/endpoint/GetAmountCar';
+import GetAmountAlc from './src/endpoint/GetAmountAlc';
+import Product from './src/modules/Product';
+import CartWishlist from './src/modules/CartWishlist';
+import Review from './src/modules/Review';
+import CarDetails from './src/modules/CarDetails';
+import AlcoholDetails from './src/modules/AlcoholDetails';
+import CreateCar from './src/endpoint/CreateCar';
+import CreateAlcohol from './src/endpoint/CreateAlcohol';
 
 const PORT          = process.env.PORT || 3333;
 const FRONTEND_URL  = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -68,27 +81,48 @@ app.post("/api/buy", async (req, res) => {});
 /*+++
 Fetch all cars
 ---*/
-app.post("/api/all-cars", async (req, res) => {});
+app.get("/api/all-cars", async (req, res) => {
+    try {
+        res = await AllCars(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error: " + error);
+    }
+});
 
 /*+++
 Fetch all alcohol
 ---*/
-app.post("/api/all-alcohol", async (req, res) => {});
+app.get("/api/all-alcohol", async (req, res) => {
+    try {
+        res = await AllAlcohol(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error: " + error);
+    }
+});
 
 /*+++
 Get a specific alcohol
 ---*/
-app.post("/api/alcohol/:id", async (req, res) => {});
+app.post("/api/alcohol/:id", async (req, res) => {
+    try {
+        res = await AlcoholId(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error: " + error);
+    }
+});
 
 /*+++
 Get a specific car
 ---*/
 app.post("/api/cars/:id", async (req, res) => {
     try {
-        const { id } = req.params;
+        res = await CarId(req, res);
     } catch (error) {
         console.error(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send("Internal Server Error: " + error);
     }
 });
 
@@ -100,7 +134,14 @@ app.post("/api/create-car-review", async (req, res) => {});
 /*+++
 Create a new car
 ---*/
-app.post("/api/create-car", async (req, res) => {});
+app.post("/api/create-car", async (req, res) => {
+    try {
+        res = await CreateCar(req, res);
+    } catch (error:any) {
+        console.error(error)
+        res.status(500).send("Internal server error: " + error.message)
+    }
+});
 
 /*+++
 Create a new alcohol review
@@ -110,7 +151,38 @@ app.post("/api/create-alcohol-review", async (req, res) => {});
 /*+++
 Create a new alcohol
 ---*/
-app.post("/api/create-alcohol", async (req, res) => {});
+app.post("/api/create-alcohol", async (req, res) => {
+    try {
+        res = await CreateAlcohol(req, res);
+    } catch (error:any) {
+        console.error(error)
+        res.status(500).send("Internal server error: " + error.message)
+    }
+});
+
+/*+++
+Get amount of reviews and cars
+---*/
+app.get("/api/get-amount/car", async (req, res) => {
+    try {
+        res = await GetAmountCar(req, res);   
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error: " + error);
+    }
+});
+
+/*+++
+Get amount of reviews and alcohol
+---*/
+app.get("/api/get-amount/alcohol", async (req, res) => {
+    try {
+        res = await GetAmountAlc(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error: " + error);
+    }
+});
 
 /*+++
 Test database connection
@@ -125,6 +197,13 @@ app.get("/api/ping", async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+
+app.listen(PORT, async () => {
+    try {
+        await sequelize.sync({ alter: true });
+        console.log(`Server is running on port ${PORT}`);
+        console.log("Database synced successfully (alter mode).");
+    } catch (error) {
+        console.error("Error syncing database:", error);
+    }
 });

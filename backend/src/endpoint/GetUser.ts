@@ -14,8 +14,6 @@ const GetUser = async (
         // get email & password
     const { email, password } = Request.body;
 
-    sequelize.sync();
-    User.sync();
     // Find user in database
     const user:User|null = await User.findOne({
         where: { email: email }
