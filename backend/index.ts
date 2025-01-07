@@ -1,9 +1,12 @@
 import express, { Express, Router } from 'express';
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import sequelize from './src/config/db';
+import Register from './src/endpoint/Register';
+import GetUser from './src/endpoint/GetUser';
+import User from './src/modules/User';
+import SetUser from './src/endpoint/SetUser';
 
 const PORT          = process.env.PORT || 3333;
 const FRONTEND_URL  = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -22,17 +25,40 @@ app.use(cors({
 /*+++
 Register a new user
 ---*/
-app.post("/api/register", async (req, res) => {});
+app.post("/api/register", async (req, res) => {
+    try {
+        const { firstName, lastName, email, password, role, balance } = req.body;
+        await Register(firstName, lastName, email, password, role, balance);
+        res.status(200).json({ message: 'User registered successfully' });
+    } catch (error : any) {
+        console.error(error);
+        res.status(500).send("Internal Server Error: " + error.message);
+    }
+});
 
 /*+++
-Login / Authenticate a user
+Login / Authenticate a user and create a session
 ---*/
-app.post("/api/get-user", async (req, res) => {});
+app.post("/api/get-user", async (req, res) => {
+    try {
+        res = await GetUser(req, res);
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).send("Internal Server Error: " + error.message);
+    }
+});
 
 /*+++
-Update user details
+Update user details (email, password, role, balance), etc. Requires authentication
 ---*/
-app.post("/api/set-user", async (req, res) => {});
+app.post("/api/set-user", async (req, res) => {
+    try {
+        res = await SetUser(req, res);
+    } catch (error : any) {
+        console.error(error);
+        res.status(500).send("Internal Server Error: " + error.message);
+    }
+});
 
 /*+++
 Buy an item
