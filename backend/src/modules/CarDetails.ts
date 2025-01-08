@@ -10,7 +10,7 @@ class CarDetails extends Model {
     public carMileage!: number;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
-    public ProductId!: number; // Foreign key
+    public product_id!: number; // Foreign key
 }
 
 CarDetails.init(
@@ -19,6 +19,7 @@ CarDetails.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+      unique: true,
     },
     carMake: {
       type: DataTypes.STRING,
@@ -36,7 +37,7 @@ CarDetails.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    ProductId: {
+    product_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -52,6 +53,7 @@ CarDetails.init(
 );
 
 // Association
-Product.hasOne(CarDetails, { foreignKey: 'ProductId', as: 'carDetails' });
-CarDetails.belongsTo(Product, { foreignKey: 'ProductId' });
+Product.hasOne(CarDetails, { foreignKey: 'product_id', as: 'carDetails' });
+CarDetails.belongsTo(Product, { foreignKey: 'product_id', as: "productDetails" });
+
 export default CarDetails;
