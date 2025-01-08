@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Op } from "sequelize";  // Import Sequelize operators
+import { Op } from "sequelize";
 import CarDetails from "../modules/CarDetails";
 import Product from "../modules/Product";
 
