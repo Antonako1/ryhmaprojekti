@@ -3,55 +3,52 @@ import sequelize from '../config/db';
 import User from '../modules/User';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-
-
+dotenv.config();
 
 const GetUser = async (
-    Request: any,
-    Response: any
+    req: any,
+    res: any
 ) : Promise<any> => {
     try {
-        // get email & password
-    const { email, password } = Request.body;
+        // Get email & password from request body
+        const { email, password } = req.body;
 
-    // Find user in database
-    const user:User|null = await User.findOne({
-        where: { email: email }
-    });
+        // Find user in the database
+        const user = await User.findOne({
+            where: { email: email }
+        });
 
-    // Check if user exists
-    if(!user) {
-        throw new Error('User not found');
-    }
+        // Check if user exists
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
 
-    // Check if password is correct
-    const match = await bcrypt.compare(password, user.passwordHash);
-    if(!match) {
-        throw new Error('Incorrect password provided');
-    }
+        // Check if password is correct
+        const match = await bcrypt.compare(password, user.passwordHash);
+        if (!match) {
+            return res.status(401).send('Incorrect password provided');
+        }
 
-    // Return user details
-    const res_:User = await GetUser(email, password);
+        // Generate JWT token
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            return res.status(500).send('Internal Server Error: JWT not configured');
+        }
+        
+        const token = jwt.sign({ email: user.email }, secret, { expiresIn: '1h' });
 
-    // Generate JWT token
-    const secret: jwt.PrivateKey = process.env.JWT_SECRET || '';
-    if(secret === '') {
-        throw new Error('JWT_SECRET not set in .env file');
-    }
-    const token = jwt.sign({ email: res_.email }, secret, { expiresIn: '1h' });
-
-    // Return user details
-    return Response.status(200).json(
-        { message: 
-            'User authenticated successfully, returning details', 
-            user: res_,
+        // Return user details and token
+        return res.status(200).json({
+            message: 'User authenticated successfully, returning details',
+            user: user,
             token: token
-        });   
-    } catch (error : any) {
+        });
+
+    } catch (error: any) {
         console.error(error);
-        return Response.status(500).send("Internal Server Error: " + error.message);
+        return res.status(500).send("Internal Server Error: " + error.message);
     }
-}
+};
 
 export default GetUser;
     

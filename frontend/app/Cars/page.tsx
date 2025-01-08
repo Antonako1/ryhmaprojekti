@@ -1,7 +1,9 @@
+import RollingCatalog from "@/components/RollingCatalog/RollingCatalog";
+
 const CarsPage = () => {
     return (
         <div>
-        <h1>Cars</h1>
+            <RollingCatalog props={{TO_FETCH: "CARS"}}/>
         </div>
     );
 }
