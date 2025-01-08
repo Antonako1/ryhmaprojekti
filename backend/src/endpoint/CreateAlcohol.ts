@@ -31,7 +31,7 @@ const CreateAlcohol = async (req: any, res: any): Promise<any> => {
             alcoholBrand: alcoholBrand,
             alcoholVolume: alcoholVolume,
             alcoholYear: alcoholYear,
-            ProductId: product.product_id,
+            product_id: product.product_id,
         }, { transaction });
             
         await transaction.commit();

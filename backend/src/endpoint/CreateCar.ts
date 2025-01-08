@@ -34,7 +34,7 @@ const CreateCar = async (req: any, res: any): Promise<any> => {
                 carModel: carModel,
                 carYear: carYear,
                 carMileage: carMileage,
-                ProductId: product.product_id, // Set the foreign key to the Product entry
+                product_id: product.product_id, // Set the foreign key to the Product entry
             },
             { transaction } // Pass the transaction
         );
