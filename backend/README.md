@@ -45,11 +45,11 @@
 
  - POST: /all-cars
    - Fetches all cars
-   - query: ?limit={limit}&offset={offset}
+   - query: ?limit={limit}&offset={offset}&search={str}
 
  - POST: /all-alcohol 
    - Fetches all alcohol
-   - query: ?limit={limit}&offset={offset}
+   - query: ?limit={limit}&offset={offset}&search={str}
    
  - POST: /alcohol/{id}
    - Fetches specific alcohol

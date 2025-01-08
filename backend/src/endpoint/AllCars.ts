@@ -1,26 +1,35 @@
 import { Request, Response } from "express";
+import { Op } from "sequelize";  // Import Sequelize operators
 import CarDetails from "../modules/CarDetails";
 import Product from "../modules/Product";
 
 const AllCars = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { limit, offset } = req.query;
+    const { limit, offset, search } = req.query;
     const parsedLimit = parseInt(limit as string, 10) || 10;
     const parsedOffset = parseInt(offset as string, 10) || 0;
 
-    // Fetch cars with pagination and associated Product details
+    const searchConditions = search
+      ? {
+          [Op.or]: [
+            { name: { [Op.like]: `%${search}%` } },
+            { '$productDetails.name$': { [Op.like]: `%${search}%` } },
+          ],
+        }
+      : {};
+
     const cars = await CarDetails.findAndCountAll({
       limit: parsedLimit,
       offset: parsedOffset,
       include: [
         {
           model: Product,
-          as: "productDetails", // Association with Product
+          as: "productDetails",
+          where: searchConditions,
         },
       ],
     });
 
-    // Return the results with metadata
     return res.status(200).json({
       total: cars.count,
       cars: cars.rows,
