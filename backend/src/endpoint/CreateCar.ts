@@ -1,10 +1,26 @@
 import sequelize from "../config/db";
 import CarDetails from "../modules/CarDetails";
 import Product from "../modules/Product";
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { UserRoles } from "../modules/Interfaces";
 
+dotenv.config();
 // Create a new car entry
 const CreateCar = async (req: any, res: any): Promise<any> => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    console.log(token, req.headers);
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized: Token missing' });
+    }
+    const secret: string = process.env.JWT_SECRET || '';
+
+    // Verify the token
+    const decoded: any = jwt.verify(token, secret);
+    decoded.role !== UserRoles.Admin ? res.status(401).json({ message: 'Unauthorized: Insufficient role' }) : null;
+            
     const transaction = await sequelize.transaction();
+            
     try {
         const { name
             , price

@@ -3,6 +3,7 @@ import sequelize from '../config/db';
 import User from '../modules/User';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { UserRoles } from "../modules/Interfaces";
 
 dotenv.config();
 const SetUser = async (req: any, res: any): Promise<any> => {
@@ -20,7 +21,8 @@ const SetUser = async (req: any, res: any): Promise<any> => {
 
         // Verify the token
         const decoded: any = jwt.verify(token, secret);
-
+        decoded.role !== UserRoles.Admin ? res.status(401).json({ message: 'Unauthorized: Insufficient role' }) : null;
+        
         // Find user in the database
         const user = await User.findOne({ where: { email: email } });
         if (!user) {

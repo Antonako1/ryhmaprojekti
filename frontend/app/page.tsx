@@ -5,16 +5,13 @@ import { UserRoles } from '@/Utils/Interfaces';
 import Link from 'next/link';
 import { useEffect } from 'react';
 export default function Home() {
-  const { user, authenticated } = useAuth();
-  useEffect(() => {
-    console.log(user);
-  }, [authenticated]);
+  const { user, logout, authenticated } = useAuth();
   return (
     <ul>
       <li>
         <Link href="/">Home</Link>
       </li>
-      {authenticated && user?.role === UserRoles.Admin && (
+      {user?.role === UserRoles.Admin && (
         <li>
           <Link href="/dashboard">Dashboard</Link>
         </li>
@@ -22,6 +19,11 @@ export default function Home() {
       <li>
         <Link href="/login-register">Login</Link>
       </li>
+      {authenticated && (
+          <li>
+            <button onClick={logout}>Logout</button>
+          </li>
+        )}
       <li>
         <Link href="/reviews">Reviews</Link>
       </li>

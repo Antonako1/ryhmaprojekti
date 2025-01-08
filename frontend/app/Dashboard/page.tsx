@@ -18,22 +18,27 @@ const Dashboard = () => {
                     <a href="/">Home</a>
                 </button>
                 <button>
-                    <a href="/login-register">Login</a>
+                    <a href="/login-register?redirect=dashboard">Login</a>
                 </button>
             </div>
         )
     }
+    console.log(token);
     
     const add_product = async (data:any, link:string) => {
         for(let i = 0; i < 5; i++){
             try {
-                const res = fetch(`${server}/api/${link}`, {
+                const headers:any = {
+                    "Content-Type": "application/json",
+                };
+                if (token) headers["Authorization"] = `Bearer ${token}`;
+                
+                console.log(headers);
+                const res = await fetch(`${server}/api/${link}`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers,
                     body: JSON.stringify(data),
-                })
+                })              
                 .then((res) => res.json())
                 .then((data) => {
                     console.log(data);

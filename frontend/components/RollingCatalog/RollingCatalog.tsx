@@ -43,7 +43,6 @@ const RollingCatalog = ({ props }: RollingCatalogProps) => {
             setError(error.message);
         }
     };
-    console.log(catalogData);
     useEffect(() => {
         fetchData();
     }, [limit, offset, props.TO_FETCH]);
