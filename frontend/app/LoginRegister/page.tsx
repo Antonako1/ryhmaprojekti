@@ -10,6 +10,7 @@ import * as React from 'react';
 import { IUser, UserRoles } from '@/Utils/Interfaces';
 import { useAuth } from '@/Utils/context/contextUser';
 import { server } from '@/Utils/consts';
+import { useRouter } from 'next/navigation';
 
 enum LoginRegisterEnum {
   Login,
@@ -17,24 +18,35 @@ enum LoginRegisterEnum {
 }
 
 const LoginRegister: React.FC = () => {
-  const [value, setValue] = React.useState<LoginRegisterEnum>(LoginRegisterEnum.Login);
+    const [value, setValue] = React.useState<LoginRegisterEnum>(LoginRegisterEnum.Login);
 
-  const [error, setError] = React.useState<string | null>(null);
+    const [error, setError] = React.useState<string | null>(null);
 
-  // Login form values
-  const [usernameLogin, setUsernameLogin] = React.useState<string>('');
-  const [passwordLogin, setPasswordLogin] = React.useState<string>('');
+    // Login form values
+    const [usernameLogin, setUsernameLogin] = React.useState<string>('');
+    const [passwordLogin, setPasswordLogin] = React.useState<string>('');
 
-  // Register form values
-  const [username, setUsername] = React.useState<string>('');
-  const [password, setPassword] = React.useState<string>('');
-  const [passwordConfirm, setPasswordConfirm] = React.useState<string>('');
-  const [firstName, setFirstName] = React.useState<string>('');
-  const [lastName, setLastName] = React.useState<string>('');
-  const [role, setRole] = React.useState<UserRoles>(UserRoles.User);
-
-  const { login } = useAuth();
-  const handleLogin = async () => {
+    // Register form values
+    const [username, setUsername] = React.useState<string>('');
+    const [password, setPassword] = React.useState<string>('');
+    const [passwordConfirm, setPasswordConfirm] = React.useState<string>('');
+    const [firstName, setFirstName] = React.useState<string>('');
+    const [lastName, setLastName] = React.useState<string>('');
+    const [role, setRole] = React.useState<UserRoles>(UserRoles.User);
+    const router = useRouter();
+    const { login } = useAuth();
+    const clear = () => {
+        setUsernameLogin('')
+        setPasswordLogin('')
+        setUsername('')
+        setPassword('')
+        setPasswordConfirm('')
+        setFirstName('')
+        setLastName('')
+        setRole(UserRoles.User)
+    }
+    
+    const handleLogin = async () => {
     try {
         if(usernameLogin === 'admin' && passwordLogin === 'admin') {
             setError(null);
@@ -49,7 +61,9 @@ const LoginRegister: React.FC = () => {
             setError('Invalid username or password');
             return;
         }
+        clear()
         setError(null);
+        router.push('/');
     } catch (error) {
       setError('Invalid username or password');
       console.error(error);
@@ -88,6 +102,14 @@ const LoginRegister: React.FC = () => {
                 throw new Error(data.error);
             }
             console.log(data);
+            const res2 = login(username, password);
+            if(res2) {
+                setError('Invalid input or user already exists');
+                return;
+            }
+            setError(null);
+            clear();
+            router.push('/');
         })
         .catch((error:any) => {
             console.error(error);
