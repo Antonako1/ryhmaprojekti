@@ -40,9 +40,7 @@ Register a new user
 ---*/
 app.post("/api/register", async (req, res) => {
     try {
-        const { firstName, lastName, email, password, role, balance } = req.body;
-        await Register(firstName, lastName, email, password, role, balance);
-        res.status(200).json({ message: 'User registered successfully' });
+        res = await Register(req, res);
     } catch (error : any) {
         console.error(error);
         res.status(500).send("Internal Server Error: " + error.message);
@@ -105,7 +103,7 @@ app.get("/api/all-alcohol", async (req, res) => {
 /*+++
 Get a specific alcohol
 ---*/
-app.post("/api/alcohol/:id", async (req, res) => {
+app.get("/api/alcohol/:id", async (req, res) => {
     try {
         res = await AlcoholId(req, res);
     } catch (error) {
@@ -117,7 +115,7 @@ app.post("/api/alcohol/:id", async (req, res) => {
 /*+++
 Get a specific car
 ---*/
-app.post("/api/cars/:id", async (req, res) => {
+app.get("/api/cars/:id", async (req, res) => {
     try {
         res = await CarId(req, res);
     } catch (error) {

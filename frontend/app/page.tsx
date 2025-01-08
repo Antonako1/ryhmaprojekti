@@ -1,6 +1,13 @@
-import Link from 'next/link';
+'use client'
 
+import { useAuth } from '@/Utils/context/contextUser';
+import Link from 'next/link';
+import { useEffect } from 'react';
 export default function Home() {
+  const { user, authenticated } = useAuth();
+  useEffect(() => {
+    console.log(user);
+  }, [authenticated]);
   return (
     <ul>
       <li>
@@ -10,7 +17,7 @@ export default function Home() {
         <Link href="/LoginRegister">Login</Link>
       </li>
       <li>
-        <Link href="/about">About Us</Link>
+        <Link href="/Reviews">Reviews</Link>
       </li>
       <li>
         <Link href="/blog/hello-world">Blog Post</Link>

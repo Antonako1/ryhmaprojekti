@@ -48,7 +48,7 @@ export interface IProduct {
     AlcoholDetailsId?: number;
 }
 
-export interface ICarDetails extends IProduct {
+export interface ICarDetails {
     id: number;
     carMake: string;
     carModel: string;
@@ -57,9 +57,10 @@ export interface ICarDetails extends IProduct {
     createdAt: Date;
     updatedAt: Date;
     productId: number;
+    productDetails: IProduct;
 }
 
-export interface IAlcoholDetails extends IProduct {
+export interface IAlcoholDetails {
     id: number;
     alcoholType: string;
     alcoholBrand: string;
@@ -68,4 +69,5 @@ export interface IAlcoholDetails extends IProduct {
     createdAt: Date;
     updatedAt: Date;
     product_id: number;
+    productDetails: IProduct;
 }

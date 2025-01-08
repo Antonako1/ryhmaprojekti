@@ -1,7 +1,3 @@
-/*
-COPY AND UPDATE FROM frontend/Utils/Interfaces.ts
-*/
-
 export enum UserRoles {
     Admin = 0x1,
     User = 0x2,
@@ -52,7 +48,7 @@ export interface IProduct {
     AlcoholDetailsId?: number;
 }
 
-export interface ICarDetails extends IProduct {
+export interface ICarDetails {
     id: number;
     carMake: string;
     carModel: string;
@@ -60,10 +56,11 @@ export interface ICarDetails extends IProduct {
     carMileage: number;
     createdAt: Date;
     updatedAt: Date;
-    product_id: number;
+    productId: number;
+    productDetails: IProduct;
 }
 
-export interface IAlcoholDetails extends IProduct {
+export interface IAlcoholDetails {
     id: number;
     alcoholType: string;
     alcoholBrand: string;
@@ -72,4 +69,5 @@ export interface IAlcoholDetails extends IProduct {
     createdAt: Date;
     updatedAt: Date;
     product_id: number;
+    productDetails: IProduct;
 }

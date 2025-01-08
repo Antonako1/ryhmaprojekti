@@ -1,12 +1,19 @@
 import sequelize from "../config/db";
+import CarDetails from "../modules/CarDetails";
+import Product from "../modules/Product";
 
 const CarId =  async (req: any , res: any) : Promise<any> => {
     const { id } = req.params;
     try {
-        const car = await sequelize.models.Car.findOne({
-            where: {
-                id: id
-            }
+        const car = await CarDetails.findOne({
+            where: { id },
+            include: [
+                {
+                    model: Product,
+                    as: "productDetails",
+                }
+            ],
+            
         });
         if (!car) {
             return res.status(404).send("Car not found");

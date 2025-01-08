@@ -1,7 +1,9 @@
+import RollingCatalog from "@/components/RollingCatalog/RollingCatalog";
+
 const AlcoholsPage = () => {
     return (
         <div>
-            <h1>Alcohols</h1>
+            <RollingCatalog props={{TO_FETCH: "ALCOHOL"}}/>
         </div>
     )
 }
