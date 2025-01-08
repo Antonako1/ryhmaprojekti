@@ -18,6 +18,7 @@ CartWishlist.init(
             type: DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
             primaryKey: true,
+            unique: true,
         },
         userId: {
             type: DataTypes.INTEGER.UNSIGNED,

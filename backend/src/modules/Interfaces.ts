@@ -34,7 +34,7 @@ export interface IReview {
     rating: number;
     createdAt: Date;
     updatedAt: Date;
-    ProductId: number;
+    product_id: number;
     UserId: number;
     type: "alcohol" | "car";
 }
@@ -60,7 +60,7 @@ export interface ICarDetails extends IProduct {
     carMileage: number;
     createdAt: Date;
     updatedAt: Date;
-    productId: number;
+    product_id: number;
 }
 
 export interface IAlcoholDetails extends IProduct {
@@ -71,5 +71,5 @@ export interface IAlcoholDetails extends IProduct {
     alcoholYear: number;
     createdAt: Date;
     updatedAt: Date;
-    ProductId: number;
+    product_id: number;
 }

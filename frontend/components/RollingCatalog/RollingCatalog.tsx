@@ -15,38 +15,23 @@ const RollingCatalog = ({ props }: RollingCatalogProps) => {
     const [catalogData, setCatalogData] = useState<ICarDetails[] | IAlcoholDetails | []>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [limit, setLimit] = useState<number>(5);
-    const [offset, setOffset] = useState<number>(0);
-    const [totalAmount, setTotalAmount] = useState<number>(0);
+    const [limit, setLimit] = useState<number>(5);              // Catalog items per page
+    const [offset, setOffset] = useState<number>(0);            // Catalog items offset
+    const [totalAmount, setTotalAmount] = useState<number>(0);  // Total amount of catalog items
 
     const fetchData = async () => {
         try {
             setLoading(true);
             setError(null);
-
-            // Construct the URLs
-            const fetch_link_all = props.TO_FETCH === "ALCOHOL" 
-                ? `${server}/api/get-amount/car` 
-                : `${server}/api/get-amount/alcohol`;
-
             const fetch_link_products = props.TO_FETCH === "ALCOHOL" 
                 ? `${server}/api/all-alcohols?limit=${limit}&offset=${offset}` 
                 : `${server}/api/all-cars?limit=${limit}&offset=${offset}`;
-
-            const resAll = await fetch(fetch_link_all);
-            console.log(resAll);
-            if (!resAll.ok) throw new Error("Failed to fetch total amount");
-            const dataAll = await resAll.json();
-            console.log(dataAll);
-            setTotalAmount(dataAll.AmountOfCars || dataAll.AmountOfAlcohols);
-            
-            // Fetch products
             const resProducts = await fetch(fetch_link_products);
             if (!resProducts.ok) throw new Error("Failed to fetch products");
             const dataProducts = await resProducts.json();
-            console.log(dataProducts);
-            setCatalogData(dataProducts);
-
+            setTotalAmount(dataProducts.total);
+            setOffset(0);
+            setCatalogData(props.TO_FETCH === "ALCOHOL" ? dataProducts.alcohols : dataProducts.cars);
             setLoading(false);
         } catch (error: any) {
             setLoading(false);

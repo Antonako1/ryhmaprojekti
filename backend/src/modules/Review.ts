@@ -8,7 +8,7 @@ class Review extends Model {
     public review!: string;
     public rating!: number;
     public type!: string; // ALCOHOL or CAR
-    public ProductId!: number; // Foreign key for Product
+    public product_id!: number; // Foreign key for Product
     public UserId!: number; // Foreign key for User
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -20,6 +20,7 @@ Review.init(
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
+            unique: true,
         },
         review: {
             type: DataTypes.STRING,
@@ -37,7 +38,7 @@ Review.init(
             type: DataTypes.ENUM('ALCOHOL', 'CAR'), // Enum to restrict values
             allowNull: false,
         },
-        ProductId: {
+        product_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {

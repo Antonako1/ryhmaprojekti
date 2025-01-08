@@ -10,7 +10,7 @@ class AlcoholDetails extends Model {
     public alcoholYear!: number;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
-    public ProductId!: number; // Foreign key
+    public product_id!: number; // Foreign key
 }
 
 AlcoholDetails.init(
@@ -19,6 +19,7 @@ AlcoholDetails.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+      unique: true,
     },
     alcoholType: {
       type: DataTypes.STRING,
@@ -36,7 +37,7 @@ AlcoholDetails.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    ProductId: {
+    product_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -52,7 +53,7 @@ AlcoholDetails.init(
 );
 
 // Association
-Product.hasOne(AlcoholDetails, { foreignKey: 'ProductId', as: 'alcoholDetails' });
-AlcoholDetails.belongsTo(Product, { foreignKey: 'ProductId' });
+Product.hasOne(AlcoholDetails, { foreignKey: 'product_id', as: 'alcoholDetails' });
+AlcoholDetails.belongsTo(Product, { foreignKey: 'product_id', as: "productDetails" });
 
 export default AlcoholDetails;
