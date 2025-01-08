@@ -48,10 +48,6 @@ const LoginRegister: React.FC = () => {
     
     const handleLogin = async () => {
     try {
-        if(usernameLogin === 'admin' && passwordLogin === 'admin') {
-            setError(null);
-            return;
-        }
         if(usernameLogin === "" || passwordLogin === "") {
             setError('Invalid username or password');
             return;

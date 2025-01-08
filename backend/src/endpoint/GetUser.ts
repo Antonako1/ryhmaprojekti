@@ -35,7 +35,7 @@ const GetUser = async (
             return res.status(500).send('Internal Server Error: JWT not configured');
         }
         
-        const token = jwt.sign({ email: user.email }, secret, { expiresIn: '1h' });
+        const token = jwt.sign({ email: user.email, role: user.role }, secret, { expiresIn: '1h' });
 
         // Return user details and token
         return res.status(200).json({

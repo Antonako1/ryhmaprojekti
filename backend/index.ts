@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import sequelize from './src/config/db';
 import Register from './src/endpoint/Register';
 import GetUser from './src/endpoint/GetUser';
-import User from './src/modules/User';
+import User, { UserRoles } from './src/modules/User';
 import SetUser from './src/endpoint/SetUser';
 import AllCars from './src/endpoint/AllCars';
 import AllAlcohol from './src/endpoint/AllAlcohol';
@@ -20,6 +20,7 @@ import CarDetails from './src/modules/CarDetails';
 import AlcoholDetails from './src/modules/AlcoholDetails';
 import CreateCar from './src/endpoint/CreateCar';
 import CreateAlcohol from './src/endpoint/CreateAlcohol';
+import bcrypt from 'bcrypt';
 
 const PORT          = process.env.PORT || 3333;
 const FRONTEND_URL  = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -203,10 +204,26 @@ app.listen(PORT, async () => {
                 alter: true,
             }
         );
-        console.log(await sequelize.query("SELECT product_id, COUNT(*)  FROM products GROUP BY product_id HAVING COUNT(*) > 1;"))
+    } catch (error) {
+        console.error("Error syncing database:", error);
+    }
+    try {
+        
+        const admin = await User.findOne({ where: { email: "admin" } });
+        if (!admin) {
+            await User.create({
+                email: "admin",
+                firstName: "Admin",
+                lastName: "Admin",
+                role: UserRoles.ADMIN,
+                balance: 10000000,
+                passwordHash: await bcrypt.hash("admin", 10),
+            });
+        }
+        console.log("Admin user created. email: admin, password: admin");
         console.log(`Server is running on port ${PORT}`);
         console.log("Database synced successfully (alter mode).");
     } catch (error) {
-        console.error("Error syncing database:", error);
+        console.error("Error listening to port:", error);
     }
 });
