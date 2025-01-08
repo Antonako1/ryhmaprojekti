@@ -1,0 +1,21 @@
+.LoginRegisterWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('topthing.png');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.LoginRegister {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70dvw;
+    height: 70dvh;
+    padding: 2;
+    border: 1px dashed grey;
+    background-color: white;
+}
