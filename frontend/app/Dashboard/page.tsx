@@ -45,7 +45,7 @@ const Dashboard = () => {
             name: "Nakkikosanderi",
             price: 10,
             stock: 10,
-            image: "https://www.vikingline.fi/owif/images/202018?size=1920",
+            image: "https://media.discordapp.net/attachments/1326099610560630867/1326476341800996895/IMG_0294.jpg?ex=677f90dc&is=677e3f5c&hm=6390f6c94e616c0c222aa97b864b1c685ce633966598daceff76a17d81f73d34&=&format=webp&width=321&height=571",
             description: "bruh",
             alcoholType: "Vodka",
             alcoholBrand: "Koskenkorva",
@@ -56,6 +56,7 @@ const Dashboard = () => {
     return (
         <div>
             <RollingCatalog props={{TO_FETCH: "CARS"}}/>
+            <RollingCatalog props={{TO_FETCH: "ALCOHOL"}}/>
             <AddProduct props={{TYPE: "CARS"}}/>
             <hr />
             <AddProduct props={{TYPE: "ALCOHOL"}}/>
