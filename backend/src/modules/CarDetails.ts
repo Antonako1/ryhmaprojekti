@@ -49,6 +49,7 @@ CarDetails.init(
   {
     sequelize,
     tableName: 'cars',
+    timestamps: true,
   }
 );
 

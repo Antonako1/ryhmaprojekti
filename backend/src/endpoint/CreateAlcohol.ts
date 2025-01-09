@@ -14,9 +14,12 @@ const CreateAlcohol = async (req: any, res: any): Promise<any> => {
     }
     try {
         const secret: string = process.env.JWT_SECRET || '';
-
+        if(!secret) {
+            return res.status(500).json({ message: 'Internal Server Error: JWT secret missing' });
+        }
         // Verify the token
         const decoded: any = jwt.verify(token, secret);
+        !decoded ? res.status(401).json({ message: 'Unauthorized: Invalid token' }) : null;
         decoded.role !== UserRoles.ADMIN ? res.status(401).json({ message: 'Unauthorized: Insufficient role' }) : null;
         
         const {

@@ -93,12 +93,12 @@ const LoginRegister: React.FC = () => {
             body: JSON.stringify({ email: username, password, role, balance: 0, firstName, lastName }),
         })
         .then((res) => res.json())
-        .then((data) => {
+        .then(async (data) => {
             if (data.error) {
                 throw new Error(data.error);
             }
             console.log(data);
-            const res2 = login(username, password);
+            const res2 = await login(username, password);
             if(res2) {
                 setError('Invalid input or user already exists');
                 return;

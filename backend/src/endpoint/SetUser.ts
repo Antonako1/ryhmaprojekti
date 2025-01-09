@@ -18,17 +18,22 @@ const SetUser = async (req: any, res: any): Promise<any> => {
 
     try {
         const secret: string = process.env.JWT_SECRET || '';
-
+        if(!secret) {
+            return res.status(500).json({ message: 'Internal Server Error: JWT secret missing' });
+        }
         // Verify the token
         const decoded: any = jwt.verify(token, secret);
-        decoded.role !== UserRoles.Admin ? res.status(401).json({ message: 'Unauthorized: Insufficient role' }) : null;
+        !decoded ? res.status(401).json({ message: 'Unauthorized: Invalid token' }) : null;
+        
         
         // Find user in the database
         const user = await User.findOne({ where: { email: email } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
+        if(user.email !== decoded.email) {
+            decoded.role !== UserRoles.Admin ? res.status(401).json({ message: 'Unauthorized: Insufficient role' }) : null;
+        }
         // Check if password needs to be updated
         if (password && !(await bcrypt.compare(password, user.passwordHash))) {
             user.passwordHash = await bcrypt.hash(password, 10);
