@@ -21,7 +21,9 @@ import AlcoholDetails from './src/modules/AlcoholDetails';
 import CreateCar from './src/endpoint/CreateCar';
 import CreateAlcohol from './src/endpoint/CreateAlcohol';
 import bcrypt from 'bcrypt';
+import VerifyToken from './src/endpoint/VerifyToken';
 
+dotenv.config();
 const PORT          = process.env.PORT || 3333;
 const FRONTEND_URL  = process.env.FRONTEND_URL || 'http://localhost:3000';
 
@@ -190,6 +192,15 @@ app.get("/api/ping", async (req, res) => {
     try{
         const [rows] = await sequelize.query('SELECT 1 + 1 AS result');
         res.status(200).json({ message: 'Pong!', result: rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+app.get("/api/verify-token", async (req, res) => {
+    try {
+        res = await VerifyToken(req, res);
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
