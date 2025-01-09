@@ -219,6 +219,16 @@ app.post("/api/post/review", async(req, res) =>{
 })
 
 
+app.post("/api/post/review", async(req, res) =>{
+    try{
+        res = await PostReview(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+})
+
+
 app.listen(PORT, async () => {
     try {
         await sequelize.sync(
