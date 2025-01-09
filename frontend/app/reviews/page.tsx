@@ -2,20 +2,52 @@
 
 import React, { useState } from 'react';
 import { TextField, Button, Rating, Box, Typography } from '@mui/material';
+import { useAuth } from '@/Utils/context/contextUser';
+import { server } from '@/Utils/consts';
+
+interface review{
+  name: string;
+  rating: number;
+  reviewText: string;
+  userId: number | undefined;
+}
 
 const ReviewForm: React.FC = () => {
   const [name, setName] = useState('');
   const [rating, setRating] = useState<number | null>(0);
   const [reviewText, setReviewText] = useState('');
   const [error, setError] = useState<string>('');
-
-  const handleSubmit = (event: React.FormEvent) => {
+  const { token, authenticated, user } = useAuth()
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!name || rating === null || !reviewText) {
       setError('Please fill all fields!');
       return;
     }
+    const inputValues:review = {
+      name,
+      rating,
+      reviewText,
+      userId: user?.id
+    }
+
+    await fetch(`${server}/api/post/review`, {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify(inputValues),
+    })
+    .then((res) => res.json())
+    .then((data) => {
+        console.log(data);
+    })
+    .catch((err) => {
+        console.error(err);
+        setError(err);
+    });
 
     setName('');
     setRating(0);
@@ -56,6 +88,7 @@ const ReviewForm: React.FC = () => {
             margin="normal"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            required
           />
           
           <Box sx={{ marginBottom: 2 }}>
@@ -64,6 +97,7 @@ const ReviewForm: React.FC = () => {
               name="rating"
               value={rating}
               onChange={(event, newValue) => setRating(newValue)}
+              
             />
           </Box>
 
@@ -76,6 +110,7 @@ const ReviewForm: React.FC = () => {
             margin="normal"
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
+            required
           />
 
           <Button
@@ -84,6 +119,7 @@ const ReviewForm: React.FC = () => {
             color="primary"
             fullWidth
             sx={{ marginTop: 2, backgroundColor: 'black' }}
+            disabled={!authenticated}
           >
             Submit Review
           </Button>

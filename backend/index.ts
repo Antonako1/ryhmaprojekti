@@ -22,6 +22,7 @@ import CreateCar from './src/endpoint/CreateCar';
 import CreateAlcohol from './src/endpoint/CreateAlcohol';
 import bcrypt from 'bcrypt';
 import VerifyToken from './src/endpoint/VerifyToken';
+import PostReview from './src/endpoint/PostReview';
 
 dotenv.config();
 const PORT          = process.env.PORT || 3333;
@@ -206,6 +207,16 @@ app.get("/api/verify-token", async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
+
+app.post("/api/post/review", async(req, res) =>{
+    try{
+        res = await PostReview(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+})
 
 
 app.listen(PORT, async () => {

@@ -166,7 +166,7 @@ const LoginRegister: React.FC = () => {
             <>
               <TextField
                 id="outlined-username-input"
-                label="Username"
+                label="Email"
                 type="text"
                 style={{ width: '50dvw' }}
                 value={usernameLogin}
@@ -192,7 +192,7 @@ const LoginRegister: React.FC = () => {
             <>
               <TextField
                 id="outlined-username-input"
-                label="Username"
+                label="Email"
                 type="text"
                 style={{ width: '50dvw' }}
                 value={username}
