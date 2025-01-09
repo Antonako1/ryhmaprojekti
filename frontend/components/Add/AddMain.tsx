@@ -6,6 +6,7 @@ import AddCar from "./AddCar";
 import styles from "./AddItem.module.css"
 import { IAlcoholDetails, ICarDetails } from "@/Utils/Interfaces";
 import { server } from "@/Utils/consts";
+import { useAuth } from "@/Utils/context/contextUser";
 
 
 interface AddProductProps {
@@ -18,7 +19,7 @@ const AddProduct = ({ props }: AddProductProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [data, setData] = useState<ICarDetails | IAlcoholDetails | null>(null);
-    
+    const { token } = useAuth();
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
@@ -35,6 +36,7 @@ const AddProduct = ({ props }: AddProductProps) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
             },
             body: JSON.stringify(inputValues),
         })

@@ -48,10 +48,6 @@ const LoginRegister: React.FC = () => {
     
     const handleLogin = async () => {
     try {
-        if(usernameLogin === 'admin' && passwordLogin === 'admin') {
-            setError(null);
-            return;
-        }
         if(usernameLogin === "" || passwordLogin === "") {
             setError('Invalid username or password');
             return;
@@ -63,7 +59,7 @@ const LoginRegister: React.FC = () => {
         }
         clear()
         setError(null);
-        router.push('/');
+        redirectUser();
     } catch (error) {
       setError('Invalid username or password');
       console.error(error);
@@ -109,7 +105,7 @@ const LoginRegister: React.FC = () => {
             }
             setError(null);
             clear();
-            router.push('/');
+            redirectUser();
         })
         .catch((error:any) => {
             console.error(error);
@@ -120,6 +116,18 @@ const LoginRegister: React.FC = () => {
         console.error(error);
     };
   };
+
+  const redirectUser = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const redirect = searchParams.get('redirect');
+
+    if (redirect) {
+        router.push(`/${redirect}`);
+    } else {
+        router.push('/');
+    }
+  };
+
 
   return (
     <div className={styles.LoginRegisterWrapper}>
