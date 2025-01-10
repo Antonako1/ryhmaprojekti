@@ -130,6 +130,7 @@ const LoginRegister: React.FC = () => {
 
 
   return (
+    
     <div className={styles.LoginRegisterWrapper}>
       <Box component="section" className={styles.LoginRegister}>
         <Stack spacing={2} alignItems="center">
