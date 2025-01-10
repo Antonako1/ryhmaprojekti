@@ -1,6 +1,5 @@
 'use client'
 
-import Header from '@/components/header/header'; 
 import AddProduct from "@/components/Add/AddMain";
 import RollingCatalog from "@/components/RollingCatalog/RollingCatalog";
 import { server } from "@/Utils/consts";
@@ -98,7 +97,6 @@ const Dashboard = () => {
     }
     return (
         <div>
-            <header />
             <RollingCatalog props={{TO_FETCH: "CARS"}}/>
             <RollingCatalog props={{TO_FETCH: "ALCOHOL"}}/>
             <AddProduct props={{TYPE: "CARS"}}/>
