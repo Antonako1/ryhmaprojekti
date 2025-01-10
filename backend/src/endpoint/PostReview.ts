@@ -13,6 +13,8 @@ const PostReview = async (req: any, res: any) :Promise<any> =>{
     const secret: string = process.env.JWT_SECRET || '';
 
     const decoded: any = jwt.verify(token, secret);
+    if(!decoded) res.status(401).json({ message: 'Unauthorized: Token missing' });
+
     const transaction = await sequelize.transaction();
     try {
         const { 
@@ -41,8 +43,30 @@ const PostReview = async (req: any, res: any) :Promise<any> =>{
         await transaction.rollback();
         console.error(error)
         res.status(500).send('Failed to create a review!')
+    }
+    
+    try {
+        const { type } = req.query; // SITE, ALCOHOL, CARS
+        const parsedType = type === "" ? "SITE" : type
 
-    }return res
+        if(parsedType == "SITE") {
+            const reviews = await Review.findAndCountAll({
+                where: {
+                    type: parsedType
+                }
+            });
+            res.status(200).json({
+                total: reviews.count,
+                reviews: reviews.rows
+            })
+        }
+
+    } catch (error:any) {
+        console.error(error)
+        res.status(500).send('Internal server error, dolbayob')
+    }
+    
+    return res
 }
 
 export default PostReview;

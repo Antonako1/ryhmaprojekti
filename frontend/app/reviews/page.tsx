@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField, Button, Rating, Box, Typography } from '@mui/material';
 import { useAuth } from '@/Utils/context/contextUser';
 import { server } from '@/Utils/consts';
@@ -32,7 +32,7 @@ const ReviewForm: React.FC = () => {
       userId: user?.id
     }
 
-    await fetch(`${server}/api/post/review`, {
+    await fetch(`${server}/api/create-review`, {
       method: "POST",
       headers: {
           "Content-Type": "application/json",
@@ -53,7 +53,32 @@ const ReviewForm: React.FC = () => {
     setRating(0);
     setReviewText('');
     setError('');
+
+    await getReviews()
   };
+
+
+const getReviews = async () => {
+  await fetch(`${server}/api/get-reviews?type=SITE`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((err) => {
+      console.error(err);
+      // setError(err);
+    });
+  }
+
+useEffect(() => {
+  if(token != null) getReviews();
+} , [token])
+
 
   return (
     <Box
@@ -75,7 +100,7 @@ const ReviewForm: React.FC = () => {
         }}
       >
         <Typography variant="h5" gutterBottom>
-          Write a Review
+          Give Feedback
         </Typography>
 
         {error && <Typography color="error">{error}</Typography>}
@@ -102,7 +127,7 @@ const ReviewForm: React.FC = () => {
           </Box>
 
           <TextField
-            label="Your Review"
+            label="Your Feedback"
             fullWidth
             variant="outlined"
             multiline
@@ -121,7 +146,7 @@ const ReviewForm: React.FC = () => {
             sx={{ marginTop: 2, backgroundColor: 'black' }}
             disabled={!authenticated}
           >
-            Submit Review
+            Submit Feedback
           </Button>
         </form>
       </Box>
