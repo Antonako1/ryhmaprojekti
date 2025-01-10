@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Button, Rating, Box, Typography } from '@mui/material';
 import { useAuth } from '@/Utils/context/contextUser';
 import { server } from '@/Utils/consts';
+import { IReview } from '@/Utils/Interfaces';
+import AllReviews from '@/components/AllReviews/AllReviews';
 
 interface review{
   name: string;
@@ -18,6 +20,7 @@ const ReviewForm: React.FC = () => {
   const [reviewText, setReviewText] = useState('');
   const [error, setError] = useState<string>('');
   const { token, authenticated, user } = useAuth()
+  const [reviews, setReviews] =useState<IReview[] | []>([])
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -65,19 +68,19 @@ const getReviews = async () => {
       "Authorization": `Bearer ${token}`,
     },
   })
-    .then((res) => res.json())
+    .then(async (res) => await res.json())
     .then((data) => {
       console.log(data);
+      setReviews(data.reviews)
     })
     .catch((err) => {
       console.error(err);
-      // setError(err);
     });
   }
 
 useEffect(() => {
   if(token != null) getReviews();
-} , [token])
+} , [token, server])
 
 
   return (
@@ -150,6 +153,12 @@ useEffect(() => {
           </Button>
         </form>
       </Box>
+      {reviews.length > 0 ? (
+        <AllReviews props={{list: reviews}} />
+      ) : (
+        <></>
+      )}
+
     </Box>
   );
 };

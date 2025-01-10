@@ -34,6 +34,7 @@ export interface IReview {
     product_id: number;
     UserId: number;
     type: "ALCOHOL" | "CAR" | "SITE";
+    name: string;
 }
 
 export interface IProduct {
