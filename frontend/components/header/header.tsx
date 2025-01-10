@@ -4,7 +4,7 @@ import { useAuth } from '@/Utils/context/contextUser';
 import { UserRoles } from '@/Utils/Interfaces';
 import Link from 'next/link';
 import { Button, AppBar, Toolbar, Typography } from '@mui/material';
-import { useEffect } from 'react';
+
 
 const Header = () => {
   const { user, logout, authenticated } = useAuth();
@@ -61,8 +61,7 @@ const Header = () => {
       </AppBar>
 
       {/* Add padding to the main content to ensure it is pushed down */}
-      <div style={{ marginTop: '64px' }}> {/* 64px is the default height for AppBar */}
-        {/* Your main content goes here */}
+      <div style={{ marginTop: '64px' }}> 
       </div>
     </div>
   );

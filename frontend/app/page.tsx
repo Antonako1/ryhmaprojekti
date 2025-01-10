@@ -24,6 +24,12 @@ export default function Home() {
           </li>
         )}
         <li>
+          <Link href="/reviews">Reviews</Link>
+        </li>
+        <li>
+          <Link href="/blog/hello-world">Blog Post</Link>
+        </li>
+        <li>
           <Link href="/login-register">Login</Link>
         </li>
         {authenticated && (
@@ -31,12 +37,6 @@ export default function Home() {
             <button onClick={logout}>Logout</button>
           </li>
         )}
-        <li>
-          <Link href="/reviews">Reviews</Link>
-        </li>
-        <li>
-          <Link href="/blog/hello-world">Blog Post</Link>
-        </li>
       </ul>
     </div>
   );
