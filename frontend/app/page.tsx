@@ -36,7 +36,11 @@ export default function Home() {
           <li>
             <button onClick={logout}>Logout</button>
           </li>
+          
         )}
+         <li>
+          <Link href="/user-settings">user settings</Link>
+        </li>
       </ul>
     </div>
   );
