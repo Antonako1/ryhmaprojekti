@@ -24,6 +24,7 @@ import bcrypt from 'bcrypt';
 import VerifyToken from './src/endpoint/VerifyToken';
 import PostReview from './src/endpoint/PostReview';
 import GetReview from './src/endpoint/GetReview';
+import PostCart from './src/endpoint/PostCart';
 
 dotenv.config();
 const PORT          = process.env.PORT || 3333;
@@ -228,6 +229,14 @@ app.get("/api/get-reviews", async (req, res) => {
     }  
 })
 
+app.post("/api/create-cart", async(req, res) => {
+    try {
+        res = await PostCart(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error")
+    }
+})
 
 app.listen(PORT, async () => {
     try {
