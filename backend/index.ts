@@ -21,6 +21,7 @@ import AlcoholDetails from './src/modules/AlcoholDetails';
 import CreateCar from './src/endpoint/CreateCar';
 import CreateAlcohol from './src/endpoint/CreateAlcohol';
 import bcrypt from 'bcrypt';
+import UpdateOwnUser from './src/endpoint/UpdateOwnUser';
 
 const PORT          = process.env.PORT || 3333;
 const FRONTEND_URL  = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -226,4 +227,6 @@ app.listen(PORT, async () => {
     } catch (error) {
         console.error("Error listening to port:", error);
     }
+
+    app.post('/api/update-user', UpdateOwnUser);
 });

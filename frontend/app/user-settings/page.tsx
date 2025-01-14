@@ -1,71 +1,106 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/Utils/context/contextUser'; 
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import CircularProgress from '@mui/material/CircularProgress';
+import React, { useState } from 'react';
+import { useAuth } from '@/Utils/context/contextUser';
+import { server } from '@/Utils/consts';
 
-const Profile: React.FC = () => {
-  const { user } = useAuth(); 
-  const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState<{
-    firstName: string;
-    lastName: string;
-    email: string;
-  } | null>(null);
+const ProfilePage: React.FC = () => {
+  const { user, token, setUser } = useAuth();
+  const [formData, setFormData] = useState({
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || '',
+    password: '',
+  });
 
-  useEffect(() => {
-    if (user) {
-      setUserData(user);
-      setLoading(false);
-    } else {
-      const fetchUserData = async () => {
-        try {
-          const response = await fetch('/api/user'); 
-          const data = await response.json();
-          setUserData(data);
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        } finally {
-          setLoading(false);
-        }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const updateData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password, 
       };
-      fetchUserData();
+
+      const res = await fetch(`${server}/api/update-user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, 
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+
+      const data = await res.json();
+      alert('Profile updated successfully');
+      setUser(data.user); 
+    } catch (error: any) {
+      console.error(error.message);
+      alert('Error updating profile: ' + error.message);
     }
-  }, [user]);
-
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (!userData) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-        <Typography variant="h5" color="error">
-          No user data found. Please log in.
-        </Typography>
-      </Box>
-    );
-  }
-
-  const { firstName, lastName, email } = userData;
+  };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-      <Stack spacing={3} alignItems="center">
-        <Typography variant="h4">User Profile</Typography>
-        <Typography variant="h6">First Name: {firstName}</Typography>
-        <Typography variant="h6">Last Name: {lastName}</Typography>
-        <Typography variant="h6">Email: {email}</Typography>
-      </Stack>
-    </Box>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="email">Email</label>
+          <input
+            type="text"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="password">New Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Leave blank to keep current password"
+          />
+        </div>
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
   );
 };
 
-export default Profile;
+export default ProfilePage;
