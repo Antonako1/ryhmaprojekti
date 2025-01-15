@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/Utils/context/contextUser';
 import { server } from '@/Utils/consts';
+import './Settings.css'; 
 
 const ProfilePage: React.FC = () => {
   const { user, token, setUser } = useAuth();
@@ -25,14 +26,14 @@ const ProfilePage: React.FC = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
-        password: formData.password, 
+        password: formData.password,
       };
 
       const res = await fetch(`${server}/api/update-user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updateData),
       });
@@ -43,7 +44,7 @@ const ProfilePage: React.FC = () => {
 
       const data = await res.json();
       alert('Profile updated successfully');
-      setUser(data.user); 
+      setUser(data.user);
     } catch (error: any) {
       console.error(error.message);
       alert('Error updating profile: ' + error.message);
@@ -51,10 +52,10 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="form-container">
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="firstName">First Name</label>
+        <div className="form-group">
+          <label htmlFor="firstName">Firstname</label>
           <input
             type="text"
             id="firstName"
@@ -64,8 +65,8 @@ const ProfilePage: React.FC = () => {
             required
           />
         </div>
-        <div>
-          <label htmlFor="lastName">Last Name</label>
+        <div className="form-group">
+          <label htmlFor="lastName">Lastname</label>
           <input
             type="text"
             id="lastName"
@@ -75,7 +76,7 @@ const ProfilePage: React.FC = () => {
             required
           />
         </div>
-        <div>
+        <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
             type="text"
@@ -86,8 +87,8 @@ const ProfilePage: React.FC = () => {
             required
           />
         </div>
-        <div>
-          <label htmlFor="password">New Password</label>
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
@@ -97,7 +98,9 @@ const ProfilePage: React.FC = () => {
             placeholder="Leave blank to keep current password"
           />
         </div>
-        <button type="submit">Save Changes</button>
+        <button type="submit" className="form-button">
+          Save
+        </button>
       </form>
     </div>
   );
