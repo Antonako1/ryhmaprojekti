@@ -40,7 +40,7 @@ const RollingCatalog = ({ props }: RollingCatalogProps) => {
             setLoading(false);
         } catch (error: any) {
             setLoading(false);
-            setError(error.message);
+            setError("Fetch failed. Either the product does not exist or the server is down.");
         }
     };
     useEffect(() => {

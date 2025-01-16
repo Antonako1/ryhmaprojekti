@@ -26,6 +26,8 @@ import UpdateOwnUser from './src/endpoint/UpdateOwnUser';
 import PostReview from './src/endpoint/PostReview';
 import GetReview from './src/endpoint/GetReview';
 import PostCart from './src/endpoint/PostCart';
+import GetCartWishlist from './src/endpoint/GetCartWishlist';
+import GetProduct from './src/endpoint/GetProduct';
 
 dotenv.config();
 const PORT          = process.env.PORT || 3333;
@@ -230,9 +232,27 @@ app.get("/api/get-reviews", async (req, res) => {
     }  
 })
 
+app.get("/api/get-cartwishlist", async (req, res) => {
+    try{
+        res = await GetCartWishlist(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }  
+})
+
 app.post("/api/create-cart", async(req, res) => {
     try {
         res = await PostCart(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error")
+    }
+})
+
+app.get("/api/get-product", async(req, res) => {
+    try {
+        res = await GetProduct(req, res)
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error")
@@ -244,6 +264,7 @@ app.listen(PORT, async () => {
         await sequelize.sync(
             { 
                 alter: true,
+                // force: true,
             }
         );
     } catch (error) {

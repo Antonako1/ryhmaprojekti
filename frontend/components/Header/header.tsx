@@ -31,11 +31,18 @@ const Heederi = () => {
                 </li>
               )}
               {!authenticated && (
-                <li>
-                  <Link href="/login-register">
-                    <Button sx={{ color: 'white' }}>Login</Button>
-                  </Link>
-                </li>
+                <>
+                  <li>
+                    <Link href="/login-register?">
+                      <Button sx={{ color: 'white' }}>Login</Button>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/login-register?type=register">
+                      <Button sx={{ color: 'white' }}>Register</Button>
+                    </Link>
+                  </li>
+                </>
               )}
               {authenticated && (
                 <li>
