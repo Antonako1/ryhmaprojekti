@@ -49,6 +49,7 @@ AlcoholDetails.init(
   {
     sequelize,
     tableName: 'alcohols',
+    timestamps: true,
   }
 );
 

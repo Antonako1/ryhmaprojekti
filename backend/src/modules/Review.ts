@@ -7,9 +7,10 @@ class Review extends Model {
     public id!: number;
     public review!: string;
     public rating!: number;
-    public type!: string; // ALCOHOL or CAR
+    public type!: "ALCOHOL" | "CARS" | "SITE"; // "ALCOHOL" or "CAR" or "SITE"
     public product_id!: number; // Foreign key for Product
     public UserId!: number; // Foreign key for User
+    public name!: string;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
@@ -35,12 +36,16 @@ Review.init(
             },
         },
         type: {
-            type: DataTypes.ENUM('ALCOHOL', 'CAR'), // Enum to restrict values
+            type: DataTypes.ENUM('ALCOHOL', 'CAR', 'SITE'), // Enum to restrict values
             allowNull: false,
+        },
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false
         },
         product_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: Product,
                 key: 'product_id',

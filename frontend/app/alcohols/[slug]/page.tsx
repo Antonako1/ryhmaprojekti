@@ -1,5 +1,5 @@
 import ItemPage from "@/components/ItemPage/ItemPage"
-import { server } from "@/Utils/consts"
+import { server, Types } from "@/Utils/consts"
 import { IAlcoholDetails } from "@/Utils/Interfaces"
 
 export default async function AlcoholsPage({
@@ -26,6 +26,7 @@ export default async function AlcoholsPage({
     props={{
       item: data,
       error: error,
+      type: Types.ALCOHOL
     }}
   />
 }

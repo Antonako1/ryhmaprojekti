@@ -1,21 +1,32 @@
 import { Request, Response } from "express";
 import AlcoholDetails from "../modules/AlcoholDetails";
 import Product from "../modules/Product";
+import { Op } from "sequelize";
 
 const AllAlcohol = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { limit, offset } = req.query;
+    const { limit, offset, search } = req.query;
     const parsedLimit = parseInt(limit as string, 10) || 10;
     const parsedOffset = parseInt(offset as string, 10) || 0;
 
-    // Fetch alcohols with pagination and associated Product details
+    const searchConditions = search
+    ? {
+        [Op.or]: [
+          { name: { [Op.like]: `%${search}%` } },
+          { '$productDetails.name$': { [Op.like]: `%${search}%` } },
+        ],
+      }
+    : {};
+
+
     const alcohols = await AlcoholDetails.findAndCountAll({
       limit: parsedLimit,
       offset: parsedOffset,
       include: [
         {
           model: Product,
-          as: "productDetails", // Association with Product
+          as: "productDetails",
+          where: searchConditions,
         },
       ],
     });

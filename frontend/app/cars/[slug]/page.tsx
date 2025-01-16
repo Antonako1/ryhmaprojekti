@@ -1,5 +1,5 @@
 import ItemPage from "@/components/ItemPage/ItemPage"
-import { server } from "@/Utils/consts"
+import { server, Types } from "@/Utils/consts"
 import { ICarDetails } from "@/Utils/Interfaces"
 
 export default async function CarPage({
@@ -26,6 +26,7 @@ export default async function CarPage({
     props={{
       item: data,
       error: error,
+      type: Types.CARS
     }}
   />
 }

@@ -5,12 +5,13 @@ import AddAlcohol from "./AddAlcohol";
 import AddCar from "./AddCar";
 import styles from "./AddItem.module.css"
 import { IAlcoholDetails, ICarDetails } from "@/Utils/Interfaces";
-import { server } from "@/Utils/consts";
+import { server, Types } from "@/Utils/consts";
+import { useAuth } from "@/Utils/context/contextUser";
 
 
 interface AddProductProps {
     props: {
-        TYPE: "ALCOHOL" | "CARS";
+        TYPE: Types;
     };
 }
 
@@ -18,7 +19,7 @@ const AddProduct = ({ props }: AddProductProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [data, setData] = useState<ICarDetails | IAlcoholDetails | null>(null);
-    
+    const { token } = useAuth();
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
@@ -27,14 +28,15 @@ const AddProduct = ({ props }: AddProductProps) => {
         const formData = new FormData(e.currentTarget);
         
         const inputValues = Object.fromEntries(formData.entries());
-        if(props.TYPE === "ALCOHOL") setData(inputValues as unknown as IAlcoholDetails)
-        else if(props.TYPE === "CARS") setData(inputValues as unknown as ICarDetails)
+        if(props.TYPE === Types.ALCOHOL) setData(inputValues as unknown as IAlcoholDetails)
+        else if(props.TYPE === Types.CARS) setData(inputValues as unknown as ICarDetails)
         ;
-        const link = props.TYPE === "ALCOHOL" ? "create-alcohol" : "create-car";
+        const link = props.TYPE === Types.ALCOHOL ? "create-alcohol" : "create-car";
         const res = fetch(`${server}/api/${link}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
             },
             body: JSON.stringify(inputValues),
         })
@@ -55,7 +57,7 @@ const AddProduct = ({ props }: AddProductProps) => {
     
     return(
         <div>
-            <h2>{props.TYPE === "ALCOHOL" ? "Add Alcohol" : "Add Car"}</h2>
+            <h2>{props.TYPE === Types.ALCOHOL ? "Add Alcohol" : "Add Car"}</h2>
             <form className={styles.form} onSubmit={handleSubmit}>
                 <label htmlFor="name">Name</label>
                 <input type="text" id="name" name="name" required />
@@ -71,7 +73,7 @@ const AddProduct = ({ props }: AddProductProps) => {
 
                 <label htmlFor="description">Description</label>
                 <input type="text" id="description" name="description" required />
-                {props.TYPE === "ALCOHOL" ? (
+                {props.TYPE === Types.ALCOHOL ? (
                     <AddAlcohol />
                 ) : (
                     <AddCar />

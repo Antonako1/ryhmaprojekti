@@ -48,10 +48,6 @@ const LoginRegister: React.FC = () => {
     
     const handleLogin = async () => {
     try {
-        if(usernameLogin === 'admin' && passwordLogin === 'admin') {
-            setError(null);
-            return;
-        }
         if(usernameLogin === "" || passwordLogin === "") {
             setError('Invalid username or password');
             return;
@@ -63,7 +59,7 @@ const LoginRegister: React.FC = () => {
         }
         clear()
         setError(null);
-        router.push('/');
+        redirectUser();
     } catch (error) {
       setError('Invalid username or password');
       console.error(error);
@@ -97,19 +93,19 @@ const LoginRegister: React.FC = () => {
             body: JSON.stringify({ email: username, password, role, balance: 0, firstName, lastName }),
         })
         .then((res) => res.json())
-        .then((data) => {
+        .then(async (data) => {
             if (data.error) {
                 throw new Error(data.error);
             }
             console.log(data);
-            const res2 = login(username, password);
+            const res2 = await login(username, password);
             if(res2) {
                 setError('Invalid input or user already exists');
                 return;
             }
             setError(null);
             clear();
-            router.push('/');
+            redirectUser();
         })
         .catch((error:any) => {
             console.error(error);
@@ -120,6 +116,18 @@ const LoginRegister: React.FC = () => {
         console.error(error);
     };
   };
+
+  const redirectUser = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const redirect = searchParams.get('redirect');
+
+    if (redirect) {
+        router.push(`/${redirect}`);
+    } else {
+        router.push('/');
+    }
+  };
+
 
   return (
     <div className={styles.LoginRegisterWrapper}>
@@ -158,7 +166,7 @@ const LoginRegister: React.FC = () => {
             <>
               <TextField
                 id="outlined-username-input"
-                label="Username"
+                label="Email"
                 type="text"
                 style={{ width: '50dvw' }}
                 value={usernameLogin}
@@ -184,7 +192,7 @@ const LoginRegister: React.FC = () => {
             <>
               <TextField
                 id="outlined-username-input"
-                label="Username"
+                label="Email"
                 type="text"
                 style={{ width: '50dvw' }}
                 value={username}

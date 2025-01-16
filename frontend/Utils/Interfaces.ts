@@ -14,6 +14,7 @@ export interface IUser {
     balance: number;
     createdAt: Date;
     updatedAt: Date;
+    UserRoles: UserRoles;
 }
 
 export interface iCartWishlist {
@@ -32,7 +33,8 @@ export interface IReview {
     updatedAt: Date;
     product_id: number;
     UserId: number;
-    type: "alcohol" | "car";
+    type: "ALCOHOL" | "CAR" | "SITE";
+    name: string;
 }
 
 export interface IProduct {

@@ -1,11 +1,27 @@
 import sequelize from "../config/db";
 import AlcoholDetails from "../modules/AlcoholDetails";
 import Product from "../modules/Product";
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { UserRoles } from "../modules/User";
 
+dotenv.config();
 const CreateAlcohol = async (req: any, res: any): Promise<any> => {
     const transaction = await sequelize.transaction();
-
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized: Token missing' });
+    }
     try {
+        const secret: string = process.env.JWT_SECRET || '';
+        if(!secret) {
+            return res.status(500).json({ message: 'Internal Server Error: JWT secret missing' });
+        }
+        // Verify the token
+        const decoded: any = jwt.verify(token, secret);
+        !decoded ? res.status(401).json({ message: 'Unauthorized: Invalid token' }) : null;
+        decoded.role !== UserRoles.ADMIN ? res.status(401).json({ message: 'Unauthorized: Insufficient role' }) : null;
+        
         const {
             name,
             price,

@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import sequelize from './src/config/db';
 import Register from './src/endpoint/Register';
 import GetUser from './src/endpoint/GetUser';
-import User from './src/modules/User';
+import User, { UserRoles } from './src/modules/User';
 import SetUser from './src/endpoint/SetUser';
 import AllCars from './src/endpoint/AllCars';
 import AllAlcohol from './src/endpoint/AllAlcohol';
@@ -20,7 +20,14 @@ import CarDetails from './src/modules/CarDetails';
 import AlcoholDetails from './src/modules/AlcoholDetails';
 import CreateCar from './src/endpoint/CreateCar';
 import CreateAlcohol from './src/endpoint/CreateAlcohol';
+import bcrypt from 'bcrypt';
+import VerifyToken from './src/endpoint/VerifyToken';
+import UpdateOwnUser from './src/endpoint/UpdateOwnUser';
+import PostReview from './src/endpoint/PostReview';
+import GetReview from './src/endpoint/GetReview';
+import PostCart from './src/endpoint/PostCart';
 
+dotenv.config();
 const PORT          = process.env.PORT || 3333;
 const FRONTEND_URL  = process.env.FRONTEND_URL || 'http://localhost:3000';
 
@@ -125,11 +132,6 @@ app.get("/api/cars/:id", async (req, res) => {
 });
 
 /*+++
-Create a new car review
----*/
-app.post("/api/create-car-review", async (req, res) => {});
-
-/*+++
 Create a new car
 ---*/
 app.post("/api/create-car", async (req, res) => {
@@ -140,11 +142,6 @@ app.post("/api/create-car", async (req, res) => {
         res.status(500).send("Internal server error: " + error.message)
     }
 });
-
-/*+++
-Create a new alcohol review
----*/
-app.post("/api/create-alcohol-review", async (req, res) => {});
 
 /*+++
 Create a new alcohol
@@ -195,6 +192,52 @@ app.get("/api/ping", async (req, res) => {
     }
 });
 
+app.get("/api/verify-token", async (req, res) => {
+    try {
+        res = await VerifyToken(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
+app.post("/api/post/review", async(req, res) =>{
+    try{
+        res = await PostReview(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+})
+
+
+app.post("/api/create-review", async(req, res) =>{
+    try{
+        res = await PostReview(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+})
+
+app.get("/api/get-reviews", async (req, res) => {
+    try{
+        res = await GetReview(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }  
+})
+
+app.post("/api/create-cart", async(req, res) => {
+    try {
+        res = await PostCart(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error")
+    }
+})
 
 app.listen(PORT, async () => {
     try {
@@ -203,10 +246,27 @@ app.listen(PORT, async () => {
                 alter: true,
             }
         );
-        console.log(await sequelize.query("SELECT product_id, COUNT(*)  FROM products GROUP BY product_id HAVING COUNT(*) > 1;"))
-        console.log(`Server is running on port ${PORT}`);
-        console.log("Database synced successfully (alter mode).");
     } catch (error) {
         console.error("Error syncing database:", error);
     }
+    try {
+        
+        const admin = await User.findOne({ where: { email: "admin" } });
+        if (!admin) {
+            await User.create({
+                email: "admin",
+                firstName: "Admin",
+                lastName: "Admin",
+                role: UserRoles.ADMIN,
+                balance: 10000000,
+                passwordHash: await bcrypt.hash("admin", 10),
+            });
+        }
+        console.log("Admin user created. email: admin, password: admin");
+        console.log(`Server is running on port ${PORT}`);
+        console.log("Database synced successfully (alter mode).");
+    } catch (error) {
+        console.error("Error listening to port:", error);
+    }
+    app.post('/api/update-user', UpdateOwnUser);
 });

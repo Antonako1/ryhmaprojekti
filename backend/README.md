@@ -42,14 +42,18 @@
             firstName:string, 
             lastName:string 
             ```
-
+ - POST: /transaction
+  - Creates transaction
+  - query: ?type={"BUY"|"DEPO"}
+    - "BUY": Buys a product
+    - "DEPO": Deposits money to account
  - POST: /all-cars
    - Fetches all cars
-   - query: ?limit={limit}&offset={offset}
+   - query: ?limit={limit}&offset={offset}&search={str}
 
  - POST: /all-alcohol 
    - Fetches all alcohol
-   - query: ?limit={limit}&offset={offset}
+   - query: ?limit={limit}&offset={offset}&search={str}
    
  - POST: /alcohol/{id}
    - Fetches specific alcohol

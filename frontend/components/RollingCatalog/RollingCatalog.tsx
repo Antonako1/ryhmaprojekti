@@ -1,14 +1,15 @@
 'use client'
 import { useEffect, useState } from "react";
 import { IAlcoholDetails, ICarDetails } from "@/Utils/Interfaces";
-import { server } from "@/Utils/consts";
+import { server, Types } from "@/Utils/consts";
 import styles from "./RollingCatalog.module.css";
 import ItemThumbnail from "./Inner/ItemThumbnail";
 import { useRouter } from "next/navigation";
+import SearchBar from "./Inner/SearchBar";
 
 interface RollingCatalogProps {
     props: {
-        TO_FETCH: "ALCOHOL" | "CARS";
+        TO_FETCH: Types;
     };
 }
 
@@ -23,26 +24,25 @@ const RollingCatalog = ({ props }: RollingCatalogProps) => {
     const [totalAmount, setTotalAmount] = useState<number>(0);  // Total amount of catalog items
     const [prevDisabled, setPrevDisabled] = useState<boolean>(true);
     const router = useRouter();
-
+    const [searchValue, setSearchValue] = useState<string>("");
     const fetchData = async () => {
         try {
             setLoading(true);
             setError(null);
-            const fetch_link_products = props.TO_FETCH === "ALCOHOL" 
-                ? `${server}/api/all-alcohol?limit=${limit}&offset=${offset}` 
-                : `${server}/api/all-cars?limit=${limit}&offset=${offset}`;
+            const fetch_link_products = props.TO_FETCH === Types.ALCOHOL
+                ? `${server}/api/all-alcohol?limit=${limit}&offset=${offset}&search=${searchValue}` 
+                : `${server}/api/all-cars?limit=${limit}&offset=${offset}&search=${searchValue}`;
             const resProducts = await fetch(fetch_link_products);
             if (!resProducts.ok) throw new Error("Failed to fetch products");
             const dataProducts = await resProducts.json();
             setTotalAmount(dataProducts.total);
-            setCatalogData(props.TO_FETCH === "ALCOHOL" ? dataProducts.alcohols : dataProducts.cars);
+            setCatalogData(props.TO_FETCH === Types.ALCOHOL ? dataProducts.alcohols : dataProducts.cars);
             setLoading(false);
         } catch (error: any) {
             setLoading(false);
             setError(error.message);
         }
     };
-    console.log(catalogData);
     useEffect(() => {
         fetchData();
     }, [limit, offset, props.TO_FETCH]);
@@ -62,7 +62,7 @@ const RollingCatalog = ({ props }: RollingCatalogProps) => {
 
     const handleImageClick = (id: number) => {
         
-        if(props.TO_FETCH === "ALCOHOL"){
+        if(props.TO_FETCH === Types.ALCOHOL){
             router.push(`/alcohols/${id}`);
         } else {
             router.push(`/cars/${id}`);
@@ -72,9 +72,24 @@ const RollingCatalog = ({ props }: RollingCatalogProps) => {
     if (loading) return <h1>Loading...</h1>;
     if (error) return <h1>Error: {error}</h1>;
 
+    const searchFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setOffset(0);
+        fetchData();
+         
+    }
+
     return (
         <div>
             <h1>Catalog</h1>
+            <SearchBar 
+            props = {{
+                placeholder: `Search ${props.TO_FETCH === Types.ALCOHOL ? "alcohol" : "cars"}`,
+                setSearch: setSearchValue,
+                search: searchValue,
+                searchSubmit: searchFormSubmit
+            }}
+            />
             <div className={styles.catalog}>
                 {
                     catalogData.map((item: ICarDetails | IAlcoholDetails) => (
