@@ -6,12 +6,11 @@ import Link from 'next/link';
 import { Button, AppBar, Toolbar, Typography } from '@mui/material';
 
 
-const Header = () => {
+const Heederi = () => {
   const { user, logout, authenticated } = useAuth();
 
   return (
     <div>
-      {/* AppBar for the fixed header */}
       <AppBar position="sticky" sx={{ backgroundColor: 'red', zIndex: 1000 }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -51,8 +50,8 @@ const Header = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/blog/hello-world">
-                  <Button sx={{ color: 'white' }}>Blog Post</Button>
+                <Link href="/user-settings">
+                  <Button sx={{ color: 'white' }}>Settings</Button>
                 </Link>
               </li>
             </ul>
@@ -67,4 +66,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Heederi;

@@ -15,7 +15,7 @@ const Dashboard = () => {
             <div>
                 <h1>Access denied</h1>
                 <button>
-                    <a href="/">Home</a>
+                    {/* <a href="/">Home</a> */}
                 </button>
                 <button>
                     <a href="/login-register?redirect=dashboard">Login</a>
@@ -34,7 +34,7 @@ const Dashboard = () => {
                 if (token) headers["Authorization"] = `Bearer ${token}`;
                 
                 console.log(headers);
-                const res = await fetch(`${server}/api/${link}`, {
+                await fetch(`${server}/api/${link}`, {
                     method: "POST",
                     headers,
                     body: JSON.stringify(data),
