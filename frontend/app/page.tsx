@@ -31,7 +31,7 @@ export default function Home() {
         <Link href="/reviews">Reviews</Link>
       </li>
       <li>
-        <Link href="/blog/hello-world">Blog Post</Link>
+        <Link href="/cart">Cart</Link>
       </li>
       <li>
         <Link href="/user-settings">Settings</Link>
