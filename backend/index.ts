@@ -22,6 +22,9 @@ import CreateCar from './src/endpoint/CreateCar';
 import CreateAlcohol from './src/endpoint/CreateAlcohol';
 import bcrypt from 'bcrypt';
 import VerifyToken from './src/endpoint/VerifyToken';
+import PostReview from './src/endpoint/PostReview';
+import GetReview from './src/endpoint/GetReview';
+import PostCart from './src/endpoint/PostCart';
 
 dotenv.config();
 const PORT          = process.env.PORT || 3333;
@@ -128,11 +131,6 @@ app.get("/api/cars/:id", async (req, res) => {
 });
 
 /*+++
-Create a new car review
----*/
-app.post("/api/create-car-review", async (req, res) => {});
-
-/*+++
 Create a new car
 ---*/
 app.post("/api/create-car", async (req, res) => {
@@ -143,11 +141,6 @@ app.post("/api/create-car", async (req, res) => {
         res.status(500).send("Internal server error: " + error.message)
     }
 });
-
-/*+++
-Create a new alcohol review
----*/
-app.post("/api/create-alcohol-review", async (req, res) => {});
 
 /*+++
 Create a new alcohol
@@ -207,6 +200,43 @@ app.get("/api/verify-token", async (req, res) => {
     }
 });
 
+
+app.post("/api/post/review", async(req, res) =>{
+    try{
+        res = await PostReview(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+})
+
+
+app.post("/api/create-review", async(req, res) =>{
+    try{
+        res = await PostReview(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+})
+
+app.get("/api/get-reviews", async (req, res) => {
+    try{
+        res = await GetReview(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }  
+})
+
+app.post("/api/create-cart", async(req, res) => {
+    try {
+        res = await PostCart(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error")
+    }
+})
 
 app.listen(PORT, async () => {
     try {
