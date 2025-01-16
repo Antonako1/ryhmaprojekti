@@ -24,6 +24,7 @@ export interface iCartWishlist {
     quantity: number;
     createdAt: Date;
     updatedAt: Date;
+    type: "CART" | "WISHLIST";
 }
 export interface IReview {
     id: number;

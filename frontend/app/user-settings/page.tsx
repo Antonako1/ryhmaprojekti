@@ -4,15 +4,32 @@ import React, { useState } from 'react';
 import { useAuth } from '@/Utils/context/contextUser';
 import { server } from '@/Utils/consts';
 import './Settings.css'; 
+import Link from 'next/link';
 
 const UserSettings: React.FC = () => {
-  const { user, token, setUser } = useAuth();
+  const { user, token, setUser, authenticated } = useAuth();
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     email: user?.email || '',
     password: '',
   });
+
+  if(!authenticated) {
+    return(
+       <div>
+          <p>Not logged in</p>
+            <Link href="/login-register?redirect=user-settings">
+              Login
+            </Link>
+            <br/>
+            <Link href="/login-register?redirect=user-settings&type=register">
+              Register
+            </Link>
+       </div>
+    )
+  }
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
