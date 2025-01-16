@@ -5,7 +5,7 @@ import { useAuth } from '@/Utils/context/contextUser';
 import { server } from '@/Utils/consts';
 import './Settings.css'; 
 
-const ProfilePage: React.FC = () => {
+const UserSettings: React.FC = () => {
   const { user, token, setUser } = useAuth();
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',

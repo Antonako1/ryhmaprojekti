@@ -22,6 +22,7 @@ import CreateCar from './src/endpoint/CreateCar';
 import CreateAlcohol from './src/endpoint/CreateAlcohol';
 import bcrypt from 'bcrypt';
 import VerifyToken from './src/endpoint/VerifyToken';
+import UpdateOwnUser from './src/endpoint/UpdateOwnUser';
 
 dotenv.config();
 const PORT          = process.env.PORT || 3333;
@@ -237,4 +238,5 @@ app.listen(PORT, async () => {
     } catch (error) {
         console.error("Error listening to port:", error);
     }
+    app.post('/api/update-user', UpdateOwnUser);
 });
