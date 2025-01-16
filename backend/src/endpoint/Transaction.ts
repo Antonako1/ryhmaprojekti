@@ -1,6 +1,6 @@
 import Transaction from "../modules/Transaction";
 import Product from "../modules/Product";
-import User from "../modules/User";
+import User, { UserRoles } from "../modules/User";
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import sequelize from "../config/db";
@@ -23,6 +23,12 @@ const handleTransaction = async (req: any, res: any): Promise<any> => {
         !decoded ? res.status(401).json({ message: 'Unauthorized: Invalid token' }) : null;
         
         const { product_id, user_id, quantity, moneySpent } = req.body;
+
+        if(decoded.user_id !== user_id && decoded.role !== UserRoles.ADMIN) {
+            transaction.rollback();
+            return res.status(401).json({ message: "Unauthorized: Invalid user" });
+        }
+
         const { type } = req.query;
         if(type !== "BUY" && type !== "DEPO") {
             transaction.rollback();
@@ -53,6 +59,7 @@ const handleTransaction = async (req: any, res: any): Promise<any> => {
             await transaction.commit();
             return res.status(200).json({ message: "Buy transaction successful" });
         }
+        // type === "DEPO"
         else {
             const user = await User.findOne({ where: { user_id } });
             if(!user) {
