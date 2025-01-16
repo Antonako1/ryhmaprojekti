@@ -14,7 +14,7 @@ const Heederi = () => {
       <AppBar position="sticky" sx={{ backgroundColor: 'red', zIndex: 1000 }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            alc and autos
+            Alc & Autos
           </Typography>
           <nav>
             <ul style={{ display: 'flex', gap: '1rem', listStyleType: 'none', padding: 0, margin: 0 }}>
@@ -67,8 +67,8 @@ const Heederi = () => {
       </AppBar>
 
       {/* Add padding to the main content to ensure it is pushed down */}
-      <div style={{ marginTop: '64px' }}> 
-      </div>
+      {/*<div style={{ marginTop: '64px' }}> 
+      </div>*/}
     </div>
   );
 };
