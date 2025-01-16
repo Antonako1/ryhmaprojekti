@@ -5,7 +5,7 @@ import { useAuth } from "@/Utils/context/contextUser";
 import { useEffect } from "react";
 
 const VerifyUser = () => {
-    const { authenticated, token } = useAuth();
+    const { authenticated, token, logout } = useAuth();
     useEffect(() => {
         console.log(authenticated);
         if (authenticated) {
@@ -19,7 +19,7 @@ const VerifyUser = () => {
             const data = await response.json();
             if (data.error) {
                 console.error(data.error);
-                
+                logout();
             } else {
                 console.log(data);
             }
