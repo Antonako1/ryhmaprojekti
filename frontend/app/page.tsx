@@ -1,5 +1,7 @@
 'use client'
 
+import Heederi from '@/components/Header/header';
+import Header from '@/components/Header/header';
 import { useAuth } from '@/Utils/context/contextUser';
 import { UserRoles } from '@/Utils/Interfaces';
 import Link from 'next/link';
@@ -7,6 +9,7 @@ import { useEffect } from 'react';
 export default function Home() {
   const { user, logout, authenticated } = useAuth();
   return (
+   
     <ul>
       <li>
         <Link href="/">Home</Link>
@@ -30,6 +33,10 @@ export default function Home() {
       <li>
         <Link href="/cart">Cart</Link>
       </li>
+      <li>
+        <Link href="/user-settings">Settings</Link>
+      </li>
     </ul>
+    
   );
 }

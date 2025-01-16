@@ -22,6 +22,7 @@ import CreateCar from './src/endpoint/CreateCar';
 import CreateAlcohol from './src/endpoint/CreateAlcohol';
 import bcrypt from 'bcrypt';
 import VerifyToken from './src/endpoint/VerifyToken';
+import UpdateOwnUser from './src/endpoint/UpdateOwnUser';
 import PostReview from './src/endpoint/PostReview';
 import GetReview from './src/endpoint/GetReview';
 import PostCart from './src/endpoint/PostCart';
@@ -267,4 +268,5 @@ app.listen(PORT, async () => {
     } catch (error) {
         console.error("Error listening to port:", error);
     }
+    app.post('/api/update-user', UpdateOwnUser);
 });
