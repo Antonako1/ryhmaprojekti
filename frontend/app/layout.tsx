@@ -7,6 +7,8 @@ import "./globals.css";
 import { AuthProvider } from "@/Utils/context/contextUser";
 import VerifyUser from "@/components/Verify/VerifyUser";
 import Heederi from "@/components/Header/header";
+import Footer from "@/components/Footer/Footer";
+import { Box } from "@mui/material";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +38,9 @@ export default function RootLayout({
           <Heederi />
           {children}
         </AuthProvider>
+        <Box sx={{  display: 'flex', flexDirection: 'column' }}>
+        <Footer />
+        </Box>
       </body>
     </html>
   );
