@@ -8,6 +8,7 @@ class CartWishlist extends Model {
     public userId!: number; // Foreign key for User
     public productId!: number; // Foreign key for Product
     public quantity!: number; // Quantity of products
+    public type!: "CART" | "WISHLIST";
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
@@ -47,9 +48,13 @@ CartWishlist.init(
                 min: 1, // Ensure quantity is at least 1
             },
         },
+        type: {
+            type: DataTypes.ENUM('CART', 'WISHLIST'),
+            allowNull: false,
+        },
     },
     {
-        sequelize,
+        sequelize: sequelize, 
         tableName: 'cart_wishlist',
         timestamps: true, // Enable automatic timestamps
     }

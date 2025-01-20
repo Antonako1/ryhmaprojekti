@@ -19,7 +19,13 @@ enum LoginRegisterEnum {
 
 const LoginRegister: React.FC = () => {
     const [value, setValue] = React.useState<LoginRegisterEnum>(LoginRegisterEnum.Login);
-
+    React.useEffect(() => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirect = searchParams.get('type');
+      if(redirect === 'register') {
+        setValue(LoginRegisterEnum.Register);
+      }
+    }, [])
     const [error, setError] = React.useState<string | null>(null);
 
     // Login form values

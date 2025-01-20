@@ -1,0 +1,8 @@
+/* 
+Slotti
+Blackjack
+Ruletti
+Case openingit
+Sporttipelit
+Lotto
+*/

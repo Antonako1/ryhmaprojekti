@@ -3,18 +3,24 @@
 import React, { useEffect, useState } from 'react';
 import { TextField, Button, Rating, Box, Typography } from '@mui/material';
 import { useAuth } from '@/Utils/context/contextUser';
-import { server } from '@/Utils/consts';
+import { server, Types } from '@/Utils/consts';
 import { IReview } from '@/Utils/Interfaces';
 import AllReviews from '@/components/AllReviews/AllReviews';
 
+interface ReviewProps {
+    props: {
+        type: Types;
+        updateReviews: (value: boolean) => void;
+    };
+}
 interface review{
-    name: string;
-    rating: number;
-    reviewText: string;
-    userId: number | undefined;
-  }
-  
-  const ReviewForm: React.FC = () => {
+  name: string;
+  rating: number;
+  reviewText: string;
+  userId: number | undefined;
+}
+
+const ReviewForm = ({props}:ReviewProps) => {
     const [name, setName] = useState('');
     const [rating, setRating] = useState<number | null>(0);
     const [reviewText, setReviewText] = useState('');
@@ -35,7 +41,7 @@ interface review{
         userId: user?.id
       }
   
-      await fetch(`${server}/api/create-review`, {
+      await fetch(`${server}/api/create-review?type=${props.type}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -56,31 +62,9 @@ interface review{
       setRating(0);
       setReviewText('');
       setError('');
-  
-      await getReviews()
+
+      props.updateReviews(true);
     };
-  
-  
-  const getReviews = async () => {
-    await fetch(`${server}/api/get-reviews?type=SITE`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
-    })
-      .then(async (res) => await res.json())
-      .then((data) => {
-        console.log(data);
-        setReviews(data.reviews)
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    }
-  
-  useEffect(() => {
-    if(token != null) getReviews();
-  } , [token, server])
   
   
     return (

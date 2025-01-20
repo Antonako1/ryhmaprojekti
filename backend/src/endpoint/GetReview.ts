@@ -1,52 +1,49 @@
-import sequelize from "../config/db";
-import Review from "../modules/Review";
-import jwt from 'jsonwebtoken';
+import { Request, Response } from 'express';
+import sequelize from '../config/db';
+import Review from '../modules/Review';
+import CarDetails from '../modules/CarDetails';
+import AlcoholDetails from '../modules/AlcoholDetails';
 import dotenv from 'dotenv';
 
-dotenv.config()
+dotenv.config();
 
-const GetReview = async (req:any, res :any) : Promise<any> => {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized: Token missing' });
-    }
-    try {
-        const secret: string = process.env.JWT_SECRET || '';
-    
-        const decoded: any = jwt.verify(token, secret);
-        if(!decoded) res.status(401).json({ message: 'Unauthorized: Token missing' });
-    } catch (error) {
-        console.error(error)
-        res.status(500).send("Internal server error, Ty dibil")
-        return res;
-    }
-    
-    try {
-        const { type, limit, offset } = req.query; // SITE, ALCOHOL, CARS
-        const parsedLimit = parseInt(limit as string, 10) || 10;
-        const parsedOffset = parseInt(offset as string, 10) || 0;
-        const parsedType = type === "" ? "SITE" : type
-        
-        if(parsedType == "SITE") {
-            const reviews = await Review.findAndCountAll({
-                limit: parsedLimit,
-                offset: parsedOffset,
-                where: {
-                    type: parsedType
-                }
-            });
+const GetReview = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const { type = 'SITE', limit = '10', offset = '0' } = req.query;
 
-            res.status(200).json({
-                total: reviews.count,
-                reviews: reviews.rows
-            })
-        }
-    } catch (error:any) {
-        console.error(error)
-        res.status(500).send("Internal server error");
+    console.log('Fetching reviews for:', type);
+
+    const parsedLimit = parseInt(limit as string, 10);
+    const parsedOffset = parseInt(offset as string, 10);
+
+    const include = [];
+    if (type === 'CARS') {
+      include.push({
+        model: CarDetails,
+        as: 'carDetails',
+      });
+    } else if (type === 'ALCOHOL') {
+      include.push({
+        model: AlcoholDetails,
+        as: 'alcoholDetails',
+      });
     }
-    
-    return res;
-}
+
+    const reviews = await Review.findAndCountAll({
+      limit: parsedLimit,
+      offset: parsedOffset,
+      where: { type },
+      include,
+    });
+
+    return res.status(200).json({
+      total: reviews.count,
+      reviews: reviews.rows,
+    });
+  } catch (error: any) {
+    console.error('Error fetching reviews:', error.message);
+    return res.status(500).send('Internal server error');
+  }
+};
 
 export default GetReview;

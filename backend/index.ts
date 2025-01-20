@@ -26,6 +26,10 @@ import UpdateOwnUser from './src/endpoint/UpdateOwnUser';
 import PostReview from './src/endpoint/PostReview';
 import GetReview from './src/endpoint/GetReview';
 import PostCart from './src/endpoint/PostCart';
+import GetCartWishlist from './src/endpoint/GetCartWishlist';
+import GetProduct from './src/endpoint/GetProduct';
+import Buy from './src/endpoint/Buy';
+import Deposit from './src/endpoint/Deposit';
 
 dotenv.config();
 const PORT          = process.env.PORT || 3333;
@@ -81,7 +85,14 @@ app.post("/api/set-user", async (req, res) => {
 /*+++
 Buy an item
 ---*/
-app.post("/api/buy", async (req, res) => {});
+app.post("/api/buy", async (req, res) => {
+    try {
+        res = await Buy(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error: " + error);
+    }
+});
 
 /*+++
 Fetch all cars
@@ -230,6 +241,15 @@ app.get("/api/get-reviews", async (req, res) => {
     }  
 })
 
+app.get("/api/get-cartwishlist", async (req, res) => {
+    try{
+        res = await GetCartWishlist(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }  
+})
+
 app.post("/api/create-cart", async(req, res) => {
     try {
         res = await PostCart(req, res)
@@ -239,11 +259,30 @@ app.post("/api/create-cart", async(req, res) => {
     }
 })
 
+app.get("/api/get-product", async(req, res) => {
+    try {
+        res = await GetProduct(req, res)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error")
+    }
+})
+
+app.post("/api/deposit", async (req, res) => {
+    try {
+        res = await Deposit(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 app.listen(PORT, async () => {
     try {
         await sequelize.sync(
             { 
                 alter: true,
+                // force: true,
             }
         );
     } catch (error) {
@@ -264,7 +303,7 @@ app.listen(PORT, async () => {
         }
         console.log("Admin user created. email: admin, password: admin");
         console.log(`Server is running on port ${PORT}`);
-        console.log("Database synced successfully (alter mode).");
+        console.log("Database synced successfully.");
     } catch (error) {
         console.error("Error listening to port:", error);
     }
