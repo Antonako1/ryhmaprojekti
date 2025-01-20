@@ -37,6 +37,5 @@ export default function Home() {
         <Link href="/user-settings">Settings</Link>
       </li>
     </ul>
-    
   );
 }

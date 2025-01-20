@@ -8,6 +8,7 @@ import Link from 'next/link';
 
 const UserSettings: React.FC = () => {
   const { user, token, setUser, authenticated } = useAuth();
+  const [deposit, setDeposit] = useState(0);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -117,6 +118,38 @@ const UserSettings: React.FC = () => {
         </div>
         <button type="submit" className="form-button">
           Save
+        </button>
+      </form>
+      <br />
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          await fetch(`${server}/api/deposit`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ deposit }),
+          })
+          .then(async (res) => await res.json())
+          .then((data) => console.log(data))
+          .catch((err) => console.error(err));
+        }}
+      >
+        <div className="form-group">
+          <label htmlFor="deposit">Deposit</label>
+          <input
+            type="number"
+            id="deposit"
+            name="deposit"
+            value={deposit}
+            onChange={(e) => setDeposit(+e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="form-button">
+          Deposit
         </button>
       </form>
     </div>

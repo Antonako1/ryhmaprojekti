@@ -1,18 +1,30 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Button, Card, CardContent, Typography, TextField, Stack } from '@mui/material';
+import {
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 import { IAlcoholDetails, ICarDetails, iCartWishlist, IProduct } from '@/Utils/Interfaces';
 import Link from 'next/link';
 import { server } from '@/Utils/consts';
 import { useAuth } from '@/Utils/context/contextUser';
+import { useRouter } from 'next/navigation';
 
 const CartWishlistItem = ({ item }: { item: iCartWishlist }) => {
   const [data, setData] = useState<ICarDetails | IAlcoholDetails | null>(null);
   const { token } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
-    setData(null);
     const fetchProductDetails = async () => {
       try {
         const response = await fetch(`${server}/api/get-product?id=${item.productId}`, {
@@ -30,15 +42,14 @@ const CartWishlistItem = ({ item }: { item: iCartWishlist }) => {
 
     fetchProductDetails();
   }, [item.productId, token]);
-  
+
   if (!data) return <Typography variant="h6">Loading...</Typography>;
-  
+
   const isCar = 'carMake' in data;
   const _product = isCar ? (data as ICarDetails) : (data as IAlcoholDetails);
   const productDetails: IProduct = _product as unknown as IProduct;
-  const moreDetails = isCar ? (data as ICarDetails) : (data as IAlcoholDetails);
-  const product = { productDetails, moreDetails };
-  if(!product.productDetails) return <Typography variant="h6">Loading...</Typography>;
+  const product = { productDetails, moreDetails: _product };
+
   return (
     <Card sx={{ marginBottom: '1rem' }}>
       <CardContent>
@@ -46,6 +57,16 @@ const CartWishlistItem = ({ item }: { item: iCartWishlist }) => {
         <Typography variant="body2">Total quantity: {product.productDetails.stock}</Typography>
         <Typography variant="body2">Price: €{product.productDetails.price}</Typography>
         <img
+          onClick={() => {
+            const idStackLocal = isCar
+              // @ts-ignore
+              ? product.moreDetails.carDetails.id
+              // @ts-ignore
+              : product.moreDetails.alcoholDetails.id;
+            if (!idStackLocal) return;
+            const url = `/${isCar ? 'cars' : 'alcohol'}/${idStackLocal}`;
+            router.push(url);
+          }}
           style={{
             width: '300px',
             height: '200px',
@@ -57,8 +78,7 @@ const CartWishlistItem = ({ item }: { item: iCartWishlist }) => {
         />
         <Stack direction="row" spacing={2}>
           <TextField label="Quantity" type="number" size="small" />
-          <Button variant="contained">Buy</Button>
-          <Button variant="contained" color="secondary">
+          <Button variant="contained" color="secondary" onClick={async () => {}}>
             Remove
           </Button>
         </Stack>
@@ -70,25 +90,64 @@ const CartWishlistItem = ({ item }: { item: iCartWishlist }) => {
 const Cart: React.FC = () => {
   const [items, setItems] = useState<iCartWishlist[]>([]);
   const { user, token, authenticated } = useAuth();
-
+  const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false);
+  const [formDetails, setFormDetails] = useState({
+    name: '',
+    address: '',
+    paymentInfo: '',
+  });
+  
+  const fetchCartItems = async () => {
+    try {
+      const response = await fetch(`${server}/api/get-cartwishlist?type=CART&userId=${user?.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch cart items');
+      const cartData = await response.json();
+      setItems(cartData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
-    const fetchCartItems = async () => {
-      try {
-        const response = await fetch(`${server}/api/get-cartwishlist?type=CART&userId=${user?.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) throw new Error('Failed to fetch cart items');
-        const cartData = await response.json();
-        setItems(cartData);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     if (user?.id) fetchCartItems();
   }, [user?.id, token]);
+
+  const handleBuyAll = async () => {
+    setOpenCheckoutDialog(true);
+  };
+
+  const handleSubmitOrder = async () => {
+    try {
+      console.log('Order details:', formDetails, items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })));
+      setOpenCheckoutDialog(false);
+
+      await fetch(`${server}/api/buy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          listing: items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity || 1,
+          })),
+        }),
+      })
+      .then(async (res) =>await res.json())
+      .then((data) => console.log(data))
+      .catch((err) => console.error(err))
+      .finally(() => fetchCartItems());
+    } catch (error) {
+      console.error('Error placing order:', error);
+    }
+  };
 
   if (!authenticated)
     return (
@@ -118,10 +177,45 @@ const Cart: React.FC = () => {
             Back
           </Link>
         </Button>
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" onClick={handleBuyAll}>
           Checkout
         </Button>
       </Stack>
+
+      {/* Checkout Dialog */}
+      <Dialog open={openCheckoutDialog} onClose={() => setOpenCheckoutDialog(false)}>
+        <DialogTitle>Checkout</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Full Name"
+            fullWidth
+            margin="normal"
+            value={formDetails.name}
+            onChange={(e) => setFormDetails({ ...formDetails, name: e.target.value })}
+          />
+          <TextField
+            label="Shipping Address"
+            fullWidth
+            margin="normal"
+            value={formDetails.address}
+            onChange={(e) => setFormDetails({ ...formDetails, address: e.target.value })}
+          />
+          <TextField
+            label="Payment Info"
+            fullWidth
+            margin="normal"
+            type="password"
+            value={formDetails.paymentInfo}
+            onChange={(e) => setFormDetails({ ...formDetails, paymentInfo: e.target.value })}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenCheckoutDialog(false)}>Cancel</Button>
+          <Button variant="contained" color="primary" onClick={handleSubmitOrder}>
+            Submit Order
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

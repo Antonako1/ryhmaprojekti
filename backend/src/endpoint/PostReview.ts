@@ -24,12 +24,14 @@ const PostReview = async (req: any, res: any) :Promise<any> =>{
             userId,
         } = req.body;
 
+        const { type } = req.query; // SITE, ALCOHOL, CARS
+
         const postReview = await Review.create({
             review: reviewText,
             rating: rating,
             UserId: userId,
             name: name,
-            type: 'SITE',
+            type: type,
             product_id: null,
         },{ transaction });
 
