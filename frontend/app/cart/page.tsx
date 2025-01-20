@@ -78,7 +78,16 @@ const CartWishlistItem = ({ item }: { item: iCartWishlist }) => {
         />
         <Stack direction="row" spacing={2}>
           <TextField label="Quantity" type="number" size="small" />
-          <Button variant="contained" color="secondary" onClick={async () => {}}>
+          <Button variant="contained" color="secondary" onClick={async () => {
+            await fetch(`${server}/api/remove-cartwishlist?type=CART&productId=${item.productId}`,
+              {
+                method: 'DELETE',
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+          }}>
             Remove
           </Button>
         </Stack>

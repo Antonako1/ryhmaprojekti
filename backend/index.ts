@@ -30,6 +30,7 @@ import GetCartWishlist from './src/endpoint/GetCartWishlist';
 import GetProduct from './src/endpoint/GetProduct';
 import Buy from './src/endpoint/Buy';
 import Deposit from './src/endpoint/Deposit';
+import RemoveCartWishlist from './src/endpoint/RemoveCartWishlist';
 
 dotenv.config();
 const PORT          = process.env.PORT || 3333;
@@ -271,6 +272,15 @@ app.get("/api/get-product", async(req, res) => {
 app.post("/api/deposit", async (req, res) => {
     try {
         res = await Deposit(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+app.delete("/api/remove-cart-wishlist", async (req, res) => {
+    try {
+        res = await RemoveCartWishlist(req, res);
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
