@@ -12,7 +12,7 @@ const PostCart = async (req: any, res: any) :Promise<any> =>{
     const secret: string = process.env.JWT_SECRET || '';
 
     const decoded: any = jwt.verify(token, secret);
-    if(!decoded) res.status(401).json({ message: 'Unauthorized: Token missing' });
+    if(!decoded) return res.status(401).json({ message: 'Unauthorized: Token missing' });
 
     const transaction = await sequelize.transaction();
     try {

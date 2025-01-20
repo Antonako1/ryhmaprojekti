@@ -10,6 +10,9 @@ interface AllRevieswsProps {
 }
 
 const AllReviews = ({props} : AllRevieswsProps) => {
+    console.log("Current reviews: ", props.list, "Length: ", props.list.length)
+    if(props.list.length < 1) return <Typography variant="h6">No reviews yet!</Typography>
+
     return(
         <Box
             sx={{
@@ -25,7 +28,9 @@ const AllReviews = ({props} : AllRevieswsProps) => {
                 paddingRight: 1,
             }}
             >
-                {props.list.map((review: IReview, index: number) => (
+                {props.list.map((review: IReview, index: number) => {
+                    console.log("Review: ", review)
+                    return(
                     <Card key={index} sx={{ boxShadow: 3, borderRadius: 2, bgcolor: '#f9f9f9' }}>
                         <CardContent>
                             <Stack direction="row" spacing={1} alignItems="center">
@@ -39,7 +44,8 @@ const AllReviews = ({props} : AllRevieswsProps) => {
                             </Typography>
                         </CardContent>
                     </Card>
-                ))}
+                    )
+                })}
             </Stack>
         </Box>
     )
