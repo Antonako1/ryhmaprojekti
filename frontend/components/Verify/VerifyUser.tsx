@@ -5,25 +5,29 @@ import { useAuth } from "@/Utils/context/contextUser";
 import { useEffect } from "react";
 
 const VerifyUser = () => {
-    const { authenticated, token, logout } = useAuth();
+    const { authenticated, token, logout, user } = useAuth();
     useEffect(() => {
-        console.log(authenticated);
         if (authenticated) {
             async function fetchUser() {
-            const response = await fetch(server+"/api/verify-token", {
+            await fetch(server+"/api/verify-token", {
                 method: "GET",
                 headers: {
-                "Authorization": `Bearer ${token}`,
+                    "Authorization": `Bearer ${token}`
                 }
-            });
-            const data = await response.json();
-            if (data.error) {
-                console.error(data.error);
+            })
+            .then(async (res) => res.json())
+            .then(async (data) => {
+                console.log("Verify:", data)
+                if (data.error) {
+                    logout();
+                }
+            })
+            .catch((error) => {
+                console.error(error);
                 logout();
-            } else {
-                console.log(data);
-            }
-            }
+            }); 
+
+        }
             fetchUser();
         }
     }, [authenticated, token]);

@@ -5,6 +5,7 @@ import { useAuth } from '@/Utils/context/contextUser';
 import { server } from '@/Utils/consts';
 import './Settings.css'; 
 import Link from 'next/link';
+import { IUser } from '@/Utils/Interfaces';
 
 const UserSettings: React.FC = () => {
   const { user, token, setUser, authenticated } = useAuth();
@@ -135,6 +136,16 @@ const UserSettings: React.FC = () => {
           .then(async (res) => await res.json())
           .then((data) => console.log(data))
           .catch((err) => console.error(err));
+
+          if(!user) {
+            return;
+          }
+          let temp:IUser = {...user};
+          if(!temp.balance) {
+            temp.balance = user?.balance || 0;
+          }
+          temp.balance += deposit;
+          setUser(temp);
         }}
       >
         <div className="form-group">

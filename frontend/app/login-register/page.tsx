@@ -88,7 +88,6 @@ const LoginRegister: React.FC = () => {
       setError('Invalid input');
       console.error(error.message);
     }
-    let fetch_data;
     try {
 
         await fetch(`${server}/api/register`, {

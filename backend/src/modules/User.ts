@@ -6,6 +6,12 @@ export enum UserRoles {
     USER = 0x2,
 }
 
+export enum RollChances {
+    Default = 0.3,
+    Admin = 1.1,
+    Streamer = 1.35
+}
+
 class User extends Model {
     public id!: number;
     public firstName!: string;
@@ -14,6 +20,7 @@ class User extends Model {
     public passwordHash!: string;
     public role!: UserRoles;
     public balance!: number;
+    public casinoRollChance!: number; // 0.0 - 1.0
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
@@ -45,6 +52,10 @@ User.init(
         },
         role: {
             type: DataTypes.NUMBER,
+            allowNull: false,
+        },
+        casinoRollChance: {
+            type: DataTypes.FLOAT,
             allowNull: false,
         },
         balance: {
