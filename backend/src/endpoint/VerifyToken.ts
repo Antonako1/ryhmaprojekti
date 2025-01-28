@@ -9,13 +9,13 @@ const VerifyToken = async (req: any, res: any) : Promise<any> => {
     }
     const secret: string = process.env.JWT_SECRET || "";
     if (!secret) {
-        return res.status(500).send("Internal Server Error: JWT secret missing");
+        return res.status(500).json({message: "Internal Server Error: JWT secret missing"});
     }
     jwt.verify(token, secret, (err:any, user:any) => {
         if (err) {
-            return res.status(403).send("Failed to authenticate token");
+            return res.status(403).json({message: "Failed to authenticate token"});
         }
-        return res.status(200).send(user);
+        return res.status(200).json(user);
     });
 
     return res;

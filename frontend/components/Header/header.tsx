@@ -78,6 +78,11 @@ const Heederi = () => {
                   <Button sx={{ color: 'white' }}>Profile/Depo</Button>
                 </Link>
               </li>
+              <li>
+                <Link href="/casino">
+                  <Button sx={{color: "white"}}>Casino</Button>
+                </Link>
+              </li>
             </ul>
           </nav>
         </Toolbar>

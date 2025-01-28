@@ -84,15 +84,11 @@ const ItemPage = ({ props }: ItemPageProps) => {
     }
     const handleBuying = async () => {
         handleCartAdd();
-        // ...
         router.push("/cart");
     }
     const handleWishlist = async () => {
         await handleWishlistOrCart("WISHLIST")
         alert("Item added to wishlist")
-    }
-    const handleRating = async () => {
-        // ...
     }
   
     return (

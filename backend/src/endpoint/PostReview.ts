@@ -14,8 +14,19 @@ const PostReview = async (req: any, res: any) :Promise<any> =>{
 
     const decoded: any = jwt.verify(token, secret);
     if(!decoded) res.status(401).json({ message: 'Unauthorized: Token missing' });
-
+    const { type } = req.query; // SITE, ALCOHOL, CARS
+    
     const transaction = await sequelize.transaction();
+    if(!type) {
+        await transaction.rollback();
+        return res.status(400).json({ message: 'Type is required' });
+    }
+    if(!["SITE", "ALCOHOL", "CARS"].includes(type.toUpperCase())) {
+        await transaction.rollback();
+        return res.status(400).json({ message: 'Invalid type. Must be SITE, ALCOHOL or CARS' });
+    }
+
+    // Creates a review
     try {
         const { 
             name,
@@ -24,7 +35,6 @@ const PostReview = async (req: any, res: any) :Promise<any> =>{
             userId,
         } = req.body;
 
-        const { type } = req.query; // SITE, ALCOHOL, CARS
 
         const postReview = await Review.create({
             review: reviewText,
@@ -47,8 +57,8 @@ const PostReview = async (req: any, res: any) :Promise<any> =>{
         res.status(500).send('Failed to create a review!')
     }
     
+    // Gets amount of reviews
     try {
-        const { type } = req.query; // SITE, ALCOHOL, CARS
         const parsedType = type === "" ? "SITE" : type
 
         if(parsedType == "SITE") {
