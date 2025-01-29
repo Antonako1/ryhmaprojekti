@@ -38,7 +38,7 @@ export default function RootLayout({
           <Heederi />
           {children}
         </AuthProvider>
-        <Box sx={{  display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Footer />
         </Box>
       </body>
