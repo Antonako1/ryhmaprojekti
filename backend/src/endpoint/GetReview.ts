@@ -13,10 +13,11 @@ const GetReview = async (req: Request, res: Response): Promise<Response> => {
 
     console.log('Fetching reviews for:', type);
 
-    const parsedLimit = parseInt(limit as string, 10);
-    const parsedOffset = parseInt(offset as string, 10);
+    const parsedLimit = isNaN(parseInt(limit as string, 10)) ? 10 : parseInt(limit as string, 10);
+    const parsedOffset = isNaN(parseInt(offset as string, 10)) ? 0 : parseInt(offset as string, 10);
 
-    const include = [];
+    const include: any[] = [];
+
     if (type === 'CARS') {
       include.push({
         model: CarDetails,
@@ -25,7 +26,7 @@ const GetReview = async (req: Request, res: Response): Promise<Response> => {
     } else if (type === 'ALCOHOL') {
       include.push({
         model: AlcoholDetails,
-        as: 'alcoholDetails',
+        as: 'AlcoholDetails',  // Use the same alias as in the model association
       });
     }
 
@@ -40,8 +41,8 @@ const GetReview = async (req: Request, res: Response): Promise<Response> => {
       total: reviews.count,
       reviews: reviews.rows,
     });
-  } catch (error: any) {
-    console.error('Error fetching reviews:', error.message);
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
     return res.status(500).send('Internal server error');
   }
 };

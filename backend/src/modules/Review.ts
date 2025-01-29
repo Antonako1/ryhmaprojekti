@@ -9,26 +9,16 @@ class Review extends Model {
     public id!: number;
     public review!: string;
     public rating!: number;
-    public type!: 'ALCOHOL' | 'CARS' | 'SITE'; // "ALCOHOL", "CARS", or "SITE"
-    public product_id!: number; // Foreign key for Product
-    public UserId!: number; // Foreign key for User
+    public type!: 'ALCOHOL' | 'CARS' | 'SITE';
+    public product_id!: number | null;
+    public UserId!: number;
     public name!: string;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
-    static associate() {
-        // Association with Product
-        Review.belongsTo(Product, { foreignKey: 'product_id', as: 'product' });
-
-        // Association with User
-        Review.belongsTo(User, { foreignKey: 'UserId', as: 'user' });
-
-        // Association with CarDetails
-        Review.belongsTo(CarDetails, { foreignKey: 'product_id', as: 'carDetails' });
-
-        // Association with AlcoholDetails
-        Review.belongsTo(AlcoholDetails, { foreignKey: 'product_id', as: 'alcoholDetails' });
-    }
+    // Optional fields for conditional relationships
+    public carDetailsId?: number; // Associated carDetails when type is 'CARS'
+    public alcoholDetailsId?: number; // Associated alcoholDetails when type is 'ALCOHOL'
 }
 
 Review.init(
@@ -48,11 +38,11 @@ Review.init(
             allowNull: false,
             validate: {
                 min: 1,
-                max: 5, // Assuming ratings are on a scale of 1-5
+                max: 5,
             },
         },
         type: {
-            type: DataTypes.ENUM('ALCOHOL', 'CARS', 'SITE'), // Enum to restrict values
+            type: DataTypes.ENUM('ALCOHOL', 'CARS', 'SITE'),
             allowNull: false,
         },
         name: {
@@ -64,7 +54,7 @@ Review.init(
             allowNull: true,
             references: {
                 model: Product,
-                key: 'id', // Ensure this matches the primary key of the Product table
+                key: 'product_id', // Match the primary key of Product
             },
         },
         UserId: {
@@ -72,18 +62,36 @@ Review.init(
             allowNull: false,
             references: {
                 model: User,
-                key: 'id', // Ensure this matches the primary key of the User table
+                key: 'id',
+            },
+        },
+        carDetailsId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: CarDetails,
+                key: 'id',
+            },
+        },
+        alcoholDetailsId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: AlcoholDetails,
+                key: 'id',
             },
         },
     },
     {
         sequelize,
         tableName: 'reviews',
-        timestamps: true, // Ensure createdAt and updatedAt are managed automatically
+        timestamps: true,
     }
 );
 
-// Set up associations
-Review.associate();
-
+// Define relationships
+Review.belongsTo(Product, { foreignKey: 'product_id', as: 'Product' });
+Review.belongsTo(User, { foreignKey: 'UserId', as: 'User' });
+Review.belongsTo(CarDetails, { foreignKey: 'carDetailsId', as: 'CarDetails' });
+Review.belongsTo(AlcoholDetails, { foreignKey: 'alcoholDetailsId', as: 'AlcoholDetails' });
 export default Review;

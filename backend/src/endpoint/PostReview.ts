@@ -33,7 +33,9 @@ const PostReview = async (req: any, res: any) :Promise<any> =>{
             rating,
             reviewText,
             userId,
+            product_id
         } = req.body;
+        console.log(req.body)
 
 
         const postReview = await Review.create({
@@ -42,43 +44,20 @@ const PostReview = async (req: any, res: any) :Promise<any> =>{
             UserId: userId,
             name: name,
             type: type,
-            product_id: null,
+            product_id: product_id,
         },{ transaction });
 
         await transaction.commit();
 
-        res.status(201).json({
+        return res.status(201).json({
             message: "Review created succesfully!",
             postReview
         });
     } catch (error) {
         await transaction.rollback();
         console.error(error)
-        res.status(500).send('Failed to create a review!')
+        return res.status(500).send('Failed to create a review!')
     }
-    
-    // Gets amount of reviews
-    try {
-        const parsedType = type === "" ? "SITE" : type
-
-        if(parsedType == "SITE") {
-            const reviews = await Review.findAndCountAll({
-                where: {
-                    type: parsedType
-                }
-            });
-            res.status(200).json({
-                total: reviews.count,
-                reviews: reviews.rows
-            })
-        }
-
-    } catch (error:any) {
-        console.error(error)
-        res.status(500).send('Internal server error, dolbayob')
-    }
-    
-    return res
 }
 
 export default PostReview;
