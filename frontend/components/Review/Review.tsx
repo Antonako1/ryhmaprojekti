@@ -11,6 +11,7 @@ interface ReviewProps {
     props: {
         type: Types;
         updateReviews: (value: boolean) => void;
+        product_id: number | null;
     };
 }
 interface review{
@@ -18,6 +19,7 @@ interface review{
   rating: number;
   reviewText: string;
   userId: number | undefined;
+  product_id: number | null;
 }
 
 const ReviewForm = ({props}:ReviewProps) => {
@@ -38,7 +40,8 @@ const ReviewForm = ({props}:ReviewProps) => {
         name,
         rating,
         reviewText,
-        userId: user?.id
+        userId: user?.id,
+        product_id: props.product_id,
       }
   
       await fetch(`${server}/api/create-review?type=${props.type}`, {

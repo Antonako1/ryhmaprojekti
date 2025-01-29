@@ -139,7 +139,7 @@ const ItemPage = ({ props }: ItemPageProps) => {
         </div>
         {/* Reviews Section */}
         <div className={styles.reviews}>
-          <ReviewForm props={{ type: props.type, updateReviews: setUpdateReviews }} />
+          <ReviewForm props={{ type: props.type, updateReviews: setUpdateReviews, product_id: props.item.productDetails.product_id  }} />
           <AllReviews props={{ list: reviewData }} />
         </div>
       </div>
