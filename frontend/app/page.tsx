@@ -36,6 +36,9 @@ export default function Home() {
       <li>
         <Link href="/user-settings">Settings</Link>
       </li>
+      <li>
+        <Link href="wishlist">Wishlist</Link>
+      </li>
     </ul>
   );
 }
