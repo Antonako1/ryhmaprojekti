@@ -50,6 +50,10 @@ const CartWishlistItem = ({ item }: { item: iCartWishlist }) => {
   const productDetails: IProduct = _product as unknown as IProduct;
   const product = { productDetails, moreDetails: _product };
 
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
     <Card sx={{ marginBottom: '1rem' }}>
       <CardContent>
@@ -77,17 +81,16 @@ const CartWishlistItem = ({ item }: { item: iCartWishlist }) => {
           alt={product.productDetails.name}
         />
         <Stack direction="row" spacing={2}>
-          <TextField label="Quantity" type="number" size="small" />
           <Button variant="contained" color="secondary" onClick={async () => {
-            await fetch(`${server}/api/remove-cart-wishlist?type=CART&productId=${item.productId}`,
-              {
-                method: 'DELETE',
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            )
-          }}>
+                      await fetch(`${server}/api/remove-cart-wishlist?type=WISHLIST&productId=${item.productId}`,
+                        {
+                          method: 'DELETE',
+                          headers: {
+                            Authorization: `Bearer ${token}`,
+                          },
+                        }
+                      ); handleRefresh()
+                    }}>
             Remove
           </Button>
         </Stack>
@@ -96,7 +99,7 @@ const CartWishlistItem = ({ item }: { item: iCartWishlist }) => {
   );
 };
 
-const Cart: React.FC = () => {
+const Wishlist: React.FC = () => {
   const [items, setItems] = useState<iCartWishlist[]>([]);
   const { user, token, authenticated } = useAuth();
   const [openCheckoutDialog, setOpenCheckoutDialog] = useState(false);
@@ -108,13 +111,14 @@ const Cart: React.FC = () => {
   
   const fetchCartItems = async () => {
     try {
-      const response = await fetch(`${server}/api/get-cartwishlist?type=CART&userId=${user?.id}`, {
+      const response = await fetch(`${server}/api/get-cartwishlist?type=WISHLIST&userId=${user?.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) throw new Error('Failed to fetch cart items');
+      if (!response.ok) throw new Error('Failed to fetch wishlist items');
       const cartData = await response.json();
+
       setItems(cartData);
     } catch (error) {
       console.error(error);
@@ -123,10 +127,6 @@ const Cart: React.FC = () => {
   useEffect(() => {
     if (user?.id) fetchCartItems();
   }, [user?.id, token]);
-
-  const handleBuyAll = async () => {
-    setOpenCheckoutDialog(true);
-  };
 
   const handleSubmitOrder = async () => {
     try {
@@ -161,14 +161,14 @@ const Cart: React.FC = () => {
   if (!authenticated)
     return (
       <div>
-        <Typography variant="h4">Please login to view your cart</Typography>
-        <Link href="/login-register?redirect=cart">Login</Link>
+        <Typography variant="h4">Please login to view your wishlist</Typography>
+        <Link href="/login-register?redirect=wishlist">Login</Link>
       </div>
     );
 
   return (
     <div>
-      <Typography variant="h4">Shopping Cart</Typography>
+      <Typography variant="h4">Wishlist</Typography>
       {items.length > 0 ? (
         items.map((item) => (
           <React.Fragment key={item.id}>
@@ -177,7 +177,7 @@ const Cart: React.FC = () => {
           </React.Fragment>
         ))
       ) : (
-        <Typography variant="h6">Your cart is empty</Typography>
+        <Typography variant="h6">Your wishlist is empty</Typography>
       )}
       <br />
       <Stack direction="row" spacing={2}>
@@ -186,47 +186,9 @@ const Cart: React.FC = () => {
             Back
           </Link>
         </Button>
-        <Button variant="contained" color="primary" onClick={handleBuyAll}>
-          Checkout
-        </Button>
       </Stack>
-
-      {/* Checkout Dialog */}
-      <Dialog open={openCheckoutDialog} onClose={() => setOpenCheckoutDialog(false)}>
-        <DialogTitle>Checkout</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Full Name"
-            fullWidth
-            margin="normal"
-            value={formDetails.name}
-            onChange={(e) => setFormDetails({ ...formDetails, name: e.target.value })}
-          />
-          <TextField
-            label="Shipping Address"
-            fullWidth
-            margin="normal"
-            value={formDetails.address}
-            onChange={(e) => setFormDetails({ ...formDetails, address: e.target.value })}
-          />
-          <TextField
-            label="Payment Info"
-            fullWidth
-            margin="normal"
-            type="password"
-            value={formDetails.paymentInfo}
-            onChange={(e) => setFormDetails({ ...formDetails, paymentInfo: e.target.value })}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenCheckoutDialog(false)}>Cancel</Button>
-          <Button variant="contained" color="primary" onClick={handleSubmitOrder}>
-            Submit Order
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 };
 
-export default Cart;
+export default Wishlist;
