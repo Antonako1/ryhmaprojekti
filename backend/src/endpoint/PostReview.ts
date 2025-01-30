@@ -14,17 +14,29 @@ const PostReview = async (req: any, res: any) :Promise<any> =>{
 
     const decoded: any = jwt.verify(token, secret);
     if(!decoded) res.status(401).json({ message: 'Unauthorized: Token missing' });
-
+    const { type } = req.query; // SITE, ALCOHOL, CARS
+    
     const transaction = await sequelize.transaction();
+    if(!type) {
+        await transaction.rollback();
+        return res.status(400).json({ message: 'Type is required' });
+    }
+    if(!["SITE", "ALCOHOL", "CARS"].includes(type.toUpperCase())) {
+        await transaction.rollback();
+        return res.status(400).json({ message: 'Invalid type. Must be SITE, ALCOHOL or CARS' });
+    }
+
+    // Creates a review
     try {
         const { 
             name,
             rating,
             reviewText,
             userId,
+            product_id
         } = req.body;
+        console.log(req.body)
 
-        const { type } = req.query; // SITE, ALCOHOL, CARS
 
         const postReview = await Review.create({
             review: reviewText,
@@ -32,43 +44,20 @@ const PostReview = async (req: any, res: any) :Promise<any> =>{
             UserId: userId,
             name: name,
             type: type,
-            product_id: null,
+            product_id: product_id,
         },{ transaction });
 
         await transaction.commit();
 
-        res.status(201).json({
+        return res.status(201).json({
             message: "Review created succesfully!",
             postReview
         });
     } catch (error) {
         await transaction.rollback();
         console.error(error)
-        res.status(500).send('Failed to create a review!')
+        return res.status(500).send('Failed to create a review!')
     }
-    
-    try {
-        const { type } = req.query; // SITE, ALCOHOL, CARS
-        const parsedType = type === "" ? "SITE" : type
-
-        if(parsedType == "SITE") {
-            const reviews = await Review.findAndCountAll({
-                where: {
-                    type: parsedType
-                }
-            });
-            res.status(200).json({
-                total: reviews.count,
-                reviews: reviews.rows
-            })
-        }
-
-    } catch (error:any) {
-        console.error(error)
-        res.status(500).send('Internal server error, dolbayob')
-    }
-    
-    return res
 }
 
 export default PostReview;

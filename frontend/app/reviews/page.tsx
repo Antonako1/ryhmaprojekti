@@ -32,14 +32,14 @@ const ReviewFormPage: React.FC = () => {
     }
 
     useEffect(() => {
-      if(token != null) getReviews();
+      if(token != null) {getReviews();}
     } , [token, server, updateReviews]);
 
 
   return (
     <Box>
       <Typography variant="h4">Leave a review</Typography>
-      <ReviewForm props={{type: Types.SITE, updateReviews: setUpdateReviews}} />
+      <ReviewForm props={{type: Types.SITE, updateReviews: setUpdateReviews, product_id: null}} />
       {reviews.length > 0 ? (
         <AllReviews props={{list: reviews}} />
       ) : (

@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import sequelize from './src/config/db';
 import Register from './src/endpoint/Register';
 import GetUser from './src/endpoint/GetUser';
-import User, { UserRoles } from './src/modules/User';
+import User, { RollChances, UserRoles } from './src/modules/User';
 import SetUser from './src/endpoint/SetUser';
 import AllCars from './src/endpoint/AllCars';
 import AllAlcohol from './src/endpoint/AllAlcohol';
@@ -30,6 +30,7 @@ import GetCartWishlist from './src/endpoint/GetCartWishlist';
 import GetProduct from './src/endpoint/GetProduct';
 import Buy from './src/endpoint/Buy';
 import Deposit from './src/endpoint/Deposit';
+import RemoveCartWishlist from './src/endpoint/RemoveCartWishlist';
 
 dotenv.config();
 const PORT          = process.env.PORT || 3333;
@@ -277,6 +278,15 @@ app.post("/api/deposit", async (req, res) => {
     }
 });
 
+app.delete("/api/remove-cart-wishlist", async (req, res) => {
+    try {
+        res = await RemoveCartWishlist(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 app.listen(PORT, async () => {
     try {
         await sequelize.sync(
@@ -299,7 +309,13 @@ app.listen(PORT, async () => {
                 role: UserRoles.ADMIN,
                 balance: 10000000,
                 passwordHash: await bcrypt.hash("admin", 10),
+                casinoRollChance: RollChances.Admin,
             });
+        } else {
+            // Update casinoRollChance
+            admin.casinoRollChance = RollChances.Admin;
+            await admin.save();
+            console.log("Admin user already exists. Updated casinoRollChance to Admin value.");
         }
         console.log("Admin user created. email: admin, password: admin");
         console.log(`Server is running on port ${PORT}`);

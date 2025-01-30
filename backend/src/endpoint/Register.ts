@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import sequelize from "../config/db";
-import User from "../modules/User";
+import User, { RollChances } from "../modules/User";
 import CartWishlist from "../modules/CartWishlist";
 
 const Register = async (
@@ -30,6 +30,7 @@ const Register = async (
                 passwordHash, // Store the hashed password
                 role,
                 balance,
+                casinoRollChange: RollChances.Default, // Default value
             },
             { transaction } // Pass the transaction
         );

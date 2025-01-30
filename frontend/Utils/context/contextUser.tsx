@@ -52,12 +52,11 @@ export const AuthProvider: React.FC<UserProviderProps> = ({ children }) => {
         body: JSON.stringify(loginData),
       });
       const data = await res.json();
-
+      console.log("Data:", data)
       if (data.error) {
         throw new Error(data.error);
       }
 
-      console.log(data);
       setUser(data.user);
       setToken(data.token);
       setAuthenticated(true);
