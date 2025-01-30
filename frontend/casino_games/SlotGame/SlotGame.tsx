@@ -30,8 +30,7 @@ const SlotGame = ({ props }: SlotGameProps) => {
         const MarginOfError = gameData.marginOfError;
     
         const rollChance = user?.casinoRollChance === undefined ? 0.6 : user.casinoRollChance;
-        // TEMP: rollChance
-        const rollChanceCalculated = Math.min(randomChance * 1.35, 1);
+        const rollChanceCalculated = Math.min(randomChance * rollChance, 1);
     
         const lowerBound = Math.max(0, rollChanceCalculated - MarginOfError);
         const upperBound = Math.min(1, rollChanceCalculated + MarginOfError);
@@ -121,12 +120,13 @@ useEffect(() => {
         for (let k = 0; k < gameData.images.length; k++) {
             const currentId = gameData.images[k].imageId;
             const imageValue = Number(bet);
-
+            let won_this_image: boolean = false;
             for (let i = 0; i < gridState.length; i++) {
                 const row = gridState[i];
                 if (row.every((cell) => cell === currentId)) {
                     winLines.push({ imageId: currentId, line: i });
                     totalWin += imageValue;
+                    won_this_image = true;
                 }
             }
             
@@ -134,9 +134,10 @@ useEffect(() => {
                 if (gridState.every((row) => row[j] === currentId)) {
                     winLines.push({ imageId: currentId, line: j });
                     totalWin += imageValue;
+                    won_this_image = true;
                 }
             }
-            if(totalWin > 0) totalWin *= (gameData.images[k].multiplier * 10)
+            if(won_this_image) totalWin *= (gameData.images[k].multiplier * 10)
         }
         
         if (winLines.length > 0) {
@@ -153,7 +154,7 @@ useEffect(() => {
                 }
             }, 500);
             //@ts-ignore
-            user?.balance += totalWin;
+            setUser({ ...user, balance: user.balance + totalWin });
         } else {
             // Play lose sound
             if (casinoGame.SoundEffects?.Lose) {
@@ -166,10 +167,8 @@ useEffect(() => {
             }
             setWinText("You lost!");
             //@ts-ignore
-            user?.balance -= Number(bet);
+            setUser({ ...user, balance: user.balance - Number(bet) });
         }
-        setUser(user);
-        
         fetch(`${server}/api/update-user`, {
             method: 'POST',
             headers: {

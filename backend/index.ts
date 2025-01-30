@@ -301,6 +301,7 @@ app.listen(PORT, async () => {
     try {
         
         const admin = await User.findOne({ where: { email: "admin" } });
+        const streamer = await User.findOne({ where: { email: "streamer" } });
         if (!admin) {
             await User.create({
                 email: "admin",
@@ -316,6 +317,22 @@ app.listen(PORT, async () => {
             admin.casinoRollChance = RollChances.Admin;
             await admin.save();
             console.log("Admin user already exists. Updated casinoRollChance to Admin value.");
+        }
+        if(!streamer){
+            await User.create({
+                email: "streamer",
+                firstName: "Streamer",
+                lastName: "Streamer",
+                role: UserRoles.USER,
+                balance: 10000000,
+                passwordHash: await bcrypt.hash("streamer", 10),
+                casinoRollChance: RollChances.Streamer,
+            });
+        } else {
+            // Update casinoRollChance
+            streamer.casinoRollChance = RollChances.Streamer;
+            await streamer.save();
+            console.log("Streamer user already exists. Updated casinoRollChance to Streamer value.");
         }
         console.log("Admin user created. email: admin, password: admin");
         console.log(`Server is running on port ${PORT}`);
