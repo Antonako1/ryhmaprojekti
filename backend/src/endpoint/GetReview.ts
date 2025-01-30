@@ -18,15 +18,16 @@ const GetReview = async (req: Request, res: Response): Promise<Response> => {
 
     const include: any[] = [];
 
+    // Ensure the alias matches the one defined in the Review model
     if (type === 'CARS') {
       include.push({
         model: CarDetails,
-        as: 'carDetails',
+        as: 'CarDetails',  // Match alias defined in the Review model
       });
     } else if (type === 'ALCOHOL') {
       include.push({
         model: AlcoholDetails,
-        as: 'AlcoholDetails',  // Use the same alias as in the model association
+        as: 'AlcoholDetails',  // Use the alias defined in the model association
       });
     }
 
