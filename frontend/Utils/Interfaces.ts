@@ -102,8 +102,6 @@ export enum CasinoGameCategory {
 export interface SoundEffect {
     Roll: string;           // Roll sound effect url
     Win: string;            // Win sound effect url
-    BigWin: string;         // Big win sound effect url
-    MegaWin: string;
     Lose: string;           // Lose sound effect url
 }
 

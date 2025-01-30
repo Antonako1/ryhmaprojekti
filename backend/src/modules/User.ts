@@ -7,7 +7,7 @@ export enum UserRoles {
 }
 
 export enum RollChances {
-    Default = 0.3,
+    Default = 0.6,
     Admin = 1.1,
     Streamer = 1.35
 }

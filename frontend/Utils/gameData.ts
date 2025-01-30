@@ -18,6 +18,7 @@ export enum CasinoGameStates {
     ShowMain = "ShowMain",
     SpinAction = "SpinAction",
     Rolling = "Rolling",
+    CalculateWin = "CalculateWin",
 }
 
 export const DefaultCasinoGameState:CasinoGameStates = CasinoGameStates.ShowMain;
@@ -33,13 +34,6 @@ export const SlotGrid_3X3:number[][] = [
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0],
-]
-
-export const SlotGrid_4X4:number[][] = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
 ]
 
 export const SlotGrid_5X5:number[][] = [
@@ -60,10 +54,8 @@ export const casinoGames:CasinoGame[] = [
         MasterElement: SlotGame,
         SoundEffects: {
             Roll: "/shuffle-cards-46455.mp3",
-            Win: "",
-            BigWin: "",
-            MegaWin: "",
-            Lose: "",
+            Win: "/playful-casino-slot-machine-bonus-2-183919.mp3",
+            Lose: "/violin-lose-3-180435.mp3",
         },
         SlotGameData: {
             marginOfError: 0.15,
