@@ -153,7 +153,7 @@ useEffect(() => {
                 }
             }, 500);
             //@ts-ignore
-            user?.balance += totalWin;
+            setUser({ ...user, balance: user.balance + totalWin });
         } else {
             // Play lose sound
             if (casinoGame.SoundEffects?.Lose) {
@@ -166,10 +166,8 @@ useEffect(() => {
             }
             setWinText("You lost!");
             //@ts-ignore
-            user?.balance -= Number(bet);
+            setUser({ ...user, balance: user.balance - Number(bet) });
         }
-        setUser(user);
-        
         fetch(`${server}/api/update-user`, {
             method: 'POST',
             headers: {

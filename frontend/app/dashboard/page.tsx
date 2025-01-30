@@ -66,10 +66,10 @@ const Dashboard = () => {
     }
     const debug2 = async () => {
         add_product({
-            name: "Nakkikosanderi New generation",
+            name: "Nakkikosanderi Old generation",
             price: 10,
             stock: 10,
-            image: "https://media.discordapp.net/attachments/1326099610560630867/1326476341800996895/IMG_0294.jpg?ex=677f90dc&is=677e3f5c&hm=6390f6c94e616c0c222aa97b864b1c685ce633966598daceff76a17d81f73d34&=&format=webp&width=321&height=571",
+            image: "https://media.discordapp.net/attachments/1326099610560630867/1334409735276855398/IMG_0275.jpg?ex=679c6d69&is=679b1be9&hm=41728c068bd621a9e2c08c8e12677edd7ac5b085f8fc0e2e505bc69d54486a03&=&format=webp&width=321&height=571",
             description: "bruh",
             alcoholType: "Vodka",
             alcoholBrand: "Koskenkorva",
