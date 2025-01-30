@@ -1,19 +1,23 @@
 "use client";
 
+import { server } from "@/Utils/consts";
 import { useAuth } from "@/Utils/context/contextUser";
 import { CasinoGameStates } from "@/Utils/gameData";
 import { ISlotGame, ISlotGameImages, SlotGameProps } from "@/Utils/Interfaces";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const SlotGame = ({ props }: SlotGameProps) => {
     const { gameData, casinoGame } = props;
     const [innerState, setInnerState] = useState<CasinoGameStates>(CasinoGameStates.Idle);
-    const [bet, setBet] = useState<number>(0);
+    const [bet, setBet] = useState<string>("");
     const [gridState, setGridState] = useState<number[][]>(gameData.grid);
     const [isSpinning, setIsSpinning] = useState<boolean>(false);
-    const { user, authenticated } = useAuth();  
+    const { user, authenticated, setUser, token } = useAuth();  
+    const [winText, setWinText] = useState<string>("");
     const rollAudioRef = useRef<HTMLAudioElement | null>(null);
-
+    const winAudioRef = useRef<HTMLAudioElement | null>(null);
+    const loseAudioRef = useRef<HTMLAudioElement | null>(null);
+    
     if (!authenticated) return <p>Not logged in!</p>;
     if (!casinoGame || !gameData) {
         return <p>Game data is missing</p>;
@@ -25,8 +29,9 @@ const SlotGame = ({ props }: SlotGameProps) => {
         const randomChance = Math.round(Math.random() * 10) / 10;
         const MarginOfError = gameData.marginOfError;
     
-        const rollChance = user?.casinoRollChance === undefined ? 0.3 : user.casinoRollChance;
-        const rollChanceCalculated = Math.min(randomChance * 0.3, 1);
+        const rollChance = user?.casinoRollChance === undefined ? 0.6 : user.casinoRollChance;
+        // TEMP: rollChance
+        const rollChanceCalculated = Math.min(randomChance * 1.35, 1);
     
         const lowerBound = Math.max(0, rollChanceCalculated - MarginOfError);
         const upperBound = Math.min(1, rollChanceCalculated + MarginOfError);
@@ -53,7 +58,7 @@ const SlotGame = ({ props }: SlotGameProps) => {
         setGridState((prevGrid) => [newTopRow, ...prevGrid.slice(1)]);
     }
 
-    const handleSpin = () => {
+    const handleSpin = () => {  
         if (isSpinning) return; 
 
         setIsSpinning(true);
@@ -90,7 +95,7 @@ const SlotGame = ({ props }: SlotGameProps) => {
             }
 
             setIsSpinning(false);
-            setInnerState(CasinoGameStates.Idle);
+            setInnerState(CasinoGameStates.CalculateWin);
 
             // Stop roll sound effect after the spin completes
             if (rollAudioRef.current) {
@@ -100,10 +105,96 @@ const SlotGame = ({ props }: SlotGameProps) => {
         }, 2000);
     };
 
+    
+
+useEffect(() => {
+    if (innerState === CasinoGameStates.CalculateWin) {
+        if(!user || !user.balance) return;
+        if (isNaN(Number(bet))) {
+            alert("Please enter a valid number for the bet!");
+            return;
+        }
+
+        let winLines: { imageId: number; line: number }[] = [];
+        let totalWin = 0;
+
+        for (let k = 0; k < gameData.images.length; k++) {
+            const currentId = gameData.images[k].imageId;
+            const imageValue = Number(bet);
+
+            for (let i = 0; i < gridState.length; i++) {
+                const row = gridState[i];
+                if (row.every((cell) => cell === currentId)) {
+                    winLines.push({ imageId: currentId, line: i });
+                    totalWin += imageValue;
+                }
+            }
+            
+            for (let j = 0; j < gridState[0].length; j++) {
+                if (gridState.every((row) => row[j] === currentId)) {
+                    winLines.push({ imageId: currentId, line: j });
+                    totalWin += imageValue;
+                }
+            }
+            if(totalWin > 0) totalWin *= (gameData.images[k].multiplier * 10)
+        }
+        
+        if (winLines.length > 0) {
+            setWinText(`You won ${totalWin}!`);                
+            setTimeout(() => {
+                // Play win sound
+                if (casinoGame.SoundEffects?.Win) {
+                    if (winAudioRef.current) {
+                        winAudioRef.current.pause();
+                        winAudioRef.current.currentTime = 0;
+                    }
+                    winAudioRef.current = new Audio(casinoGame.SoundEffects.Win);
+                    winAudioRef.current.play();
+                }
+            }, 500);
+            //@ts-ignore
+            user?.balance += totalWin;
+        } else {
+            // Play lose sound
+            if (casinoGame.SoundEffects?.Lose) {
+                if (loseAudioRef.current) {
+                    loseAudioRef.current.pause();
+                    loseAudioRef.current.currentTime = 0;
+                }
+                loseAudioRef.current = new Audio(casinoGame.SoundEffects.Lose);
+                loseAudioRef.current.play();
+            }
+            setWinText("You lost!");
+            //@ts-ignore
+            user?.balance -= Number(bet);
+        }
+        setUser(user);
+        
+        fetch(`${server}/api/update-user`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(user),
+        })
+        .then(async (res) => await res.json())
+        .then((data) => console.log(data))
+        .catch((err) => console.error(err));
+
+        setInnerState(CasinoGameStates.Idle);
+    }
+}, [innerState]);
+
+    
+    
+    
     return (
         <div>
             <h1>{casinoGame.name}</h1>
             <p>{casinoGame.description}</p>
+
+
             <div>
                 <table>
                     <tbody>
@@ -123,13 +214,26 @@ const SlotGame = ({ props }: SlotGameProps) => {
                     </tbody>
                 </table>
             </div>
+            <p
+            style={{
+                animation: winText ? "fadeScale 1.5s ease-in-out" : "none",
+                fontSize: "24px",
+                fontWeight: "bold",
+                color: "gold",
+                textShadow: "0px 0px 10px rgba(255, 215, 0, 0.8)",
+                textAlign: "center",
+                marginTop: "10px",
+            }}
+        >
+            {winText}
+        </p>
             <div style={{ marginTop: "1rem", marginBottom: "1rem", gap: "1rem", display: "flex", alignItems: "center" }}>
                 <label htmlFor="bet">Bet:</label>
                 <input
                     id="bet"
                     type="text"
                     value={String(bet)}
-                    onChange={(e) => setBet(parseInt(e.target.value))}
+                    onChange={(e) => setBet(e.target.value)}
                 />
                 <button onClick={handleSpin} disabled={isSpinning}>
                     {isSpinning ? "Spinning..." : "Spin"}
